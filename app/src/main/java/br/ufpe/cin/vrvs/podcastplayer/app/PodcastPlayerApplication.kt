@@ -1,6 +1,7 @@
 package br.ufpe.cin.vrvs.podcastplayer.app
 
 import android.app.Application
+import br.ufpe.cin.vrvs.podcastplayer.di.apiModule
 import br.ufpe.cin.vrvs.podcastplayer.di.databaseModule
 import br.ufpe.cin.vrvs.podcastplayer.di.repositoryModule
 import br.ufpe.cin.vrvs.podcastplayer.di.viewModelModule
@@ -11,6 +12,7 @@ import org.koin.core.context.startKoin
 class PodcastPlayerApplication : Application() {
 
     val modules = listOf(
+        apiModule,
         databaseModule,
         repositoryModule,
         viewModelModule
