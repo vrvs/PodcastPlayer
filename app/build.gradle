@@ -37,14 +37,18 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$versions.appcompat"
     implementation "androidx.constraintlayout:constraintlayout:$versions.constraintlayout"
     implementation "androidx.core:core-ktx:$versions.core_ktx"
+    implementation "androidx.room:room-ktx:$versions.room"
+    implementation "androidx.room:room-runtime:$versions.room"
     implementation "com.google.android.material:material:$versions.material"
     implementation "com.squareup.retrofit2:converter-gson:$versions.retrofit"
     implementation "com.squareup.retrofit2:retrofit:$versions.retrofit"
-    implementation "com.squareup.okhttp3:logging-interceptor:$versions.okhttp_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$versions.okhttp"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlin_coroutine"
     implementation "org.koin:koin-android:$versions.koin_android"
     implementation "org.koin:koin-android-viewmodel:$versions.koin_android"
+
+    kapt "androidx.room:room-compiler:$versions.room"
 
     testImplementation "junit:junit:$versions.junit"
 

@@ -1,4 +1,4 @@
-package br.ufpe.cin.vrvs.podcastplayer.data.data_source.remote.podcast_index.response
+package br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.response
 
 import com.google.gson.annotations.SerializedName
 

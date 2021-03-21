@@ -1,9 +1,9 @@
-package br.ufpe.cin.vrvs.podcastplayer.data.data_source.remote.podcast_index
+package br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex
 
-import br.ufpe.cin.vrvs.podcastplayer.data.data_source.remote.podcast_index.response.EpisodesResponse
-import br.ufpe.cin.vrvs.podcastplayer.data.data_source.remote.podcast_index.response.PodcastByIdResponse
-import br.ufpe.cin.vrvs.podcastplayer.data.data_source.remote.podcast_index.response.PodcastsRecentResponse
-import br.ufpe.cin.vrvs.podcastplayer.data.data_source.remote.podcast_index.response.PodcastsSearchResponse
+import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.response.EpisodesResponse
+import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.response.PodcastByIdResponse
+import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.response.PodcastsRecentResponse
+import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.response.PodcastsSearchResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Headers

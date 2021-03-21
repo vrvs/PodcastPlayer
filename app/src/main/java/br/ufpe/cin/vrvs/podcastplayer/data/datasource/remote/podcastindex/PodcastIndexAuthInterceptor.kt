@@ -1,4 +1,4 @@
-package br.ufpe.cin.vrvs.podcastplayer.data.data_source.remote.podcast_index
+package br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex
 
 import android.content.Context
 import br.ufpe.cin.vrvs.podcastplayer.R

@@ -1,16 +1,15 @@
 package br.ufpe.cin.vrvs.podcastplayer.di
 
 import android.content.Context
-import br.ufpe.cin.vrvs.podcastplayer.data.data_source.remote.podcast_index.PodcastIndexApi
-import br.ufpe.cin.vrvs.podcastplayer.data.data_source.remote.podcast_index.PodcastIndexAuthInterceptor
-import okhttp3.Interceptor
+import androidx.room.Room
+import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.PodcastDatabase
+import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.PodcastIndexApi
+import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.PodcastIndexAuthInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-
-private val URL = "https://podcastindex-org.github.io/docs-api"
 
 val apiModule = module {
     single {
@@ -31,7 +30,9 @@ val apiModule = module {
 }
 
 val databaseModule = module {
-
+    single {
+        providePodcastDatabase(get())
+    }
 }
 
 val repositoryModule = module {
@@ -68,3 +69,8 @@ private fun provideRetrofit(okHttpClient: OkHttpClient) =
 
 private fun providePodcastIndexApi(retrofit: Retrofit) =
     retrofit.create(PodcastIndexApi::class.java)
+
+private fun providePodcastDatabase(context: Context) =
+    Room.databaseBuilder(context, PodcastDatabase::class.java, "podcast_database")
+        .fallbackToDestructiveMigration()
+        .build()
