@@ -5,6 +5,8 @@ import androidx.room.Room
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.PodcastDatabase
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.PodcastIndexApi
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.PodcastIndexAuthInterceptor
+import br.ufpe.cin.vrvs.podcastplayer.data.repository.PodcastRepository
+import br.ufpe.cin.vrvs.podcastplayer.data.repository.PodcastRepositoryImpl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module
@@ -36,7 +38,9 @@ val databaseModule = module {
 }
 
 val repositoryModule = module {
-
+    single {
+        PodcastRepositoryImpl() as PodcastRepository
+    }
 }
 
 val viewModelModule = module {

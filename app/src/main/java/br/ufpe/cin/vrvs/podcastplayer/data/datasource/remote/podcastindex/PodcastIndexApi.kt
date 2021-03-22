@@ -38,8 +38,8 @@ interface PodcastIndexApi {
     ) : Call<PodcastsSearchResponse>
 
     @Headers("Accept: application/json")
-    @GET("search/byterm")
-    fun searchEpisodes(
+    @GET("episodes/byfeedid")
+    fun getEpisodes(
         @Query("id") podcastId: String,
         @QueryName pretty: String = "pretty"
     ) : Call<EpisodesResponse>

@@ -1,5 +1,7 @@
 package br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.response
 
+import br.ufpe.cin.vrvs.podcastplayer.data.model.Podcast
+import br.ufpe.cin.vrvs.podcastplayer.data.model.Podcast.*
 import com.google.gson.annotations.SerializedName
 
 open class PodcastRecentResponse {
@@ -22,3 +24,10 @@ class PodcastsRecentResponse {
     @SerializedName("feeds")
     lateinit var feeds: List<PodcastRecentResponse>
 }
+
+fun Companion.toPodcast(podcastRecentResponse: PodcastRecentResponse) = Podcast(
+    id = podcastRecentResponse.id.toString(),
+    title = podcastRecentResponse.title,
+    imageUrl = podcastRecentResponse.imageUrl,
+    categories = podcastRecentResponse.categories
+)
