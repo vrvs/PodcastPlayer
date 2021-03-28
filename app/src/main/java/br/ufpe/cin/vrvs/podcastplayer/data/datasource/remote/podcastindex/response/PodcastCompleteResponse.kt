@@ -7,10 +7,10 @@ import com.google.gson.annotations.SerializedName
 class PodcastCompleteResponse: PodcastRecentResponse() {
 
     @SerializedName("author")
-    lateinit var author: String
+    var author: String? = null
 
     @SerializedName("description")
-    lateinit var description: String
+    var description: String? = null
 }
 
 class PodcastsSearchResponse {
@@ -27,7 +27,7 @@ class PodcastByIdResponse {
 
 fun Companion.toPodcast(podcastCompleteResponse: PodcastCompleteResponse) : Podcast {
     val result = Podcast.toPodcast(podcastCompleteResponse as PodcastRecentResponse)
-    result.author = podcastCompleteResponse.author
-    result.description = podcastCompleteResponse.description
+    result.author = podcastCompleteResponse.author.orEmpty()
+    result.description = podcastCompleteResponse.description.orEmpty()
     return result
 }

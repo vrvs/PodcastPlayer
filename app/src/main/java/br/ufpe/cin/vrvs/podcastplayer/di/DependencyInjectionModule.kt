@@ -3,6 +3,8 @@ package br.ufpe.cin.vrvs.podcastplayer.di
 import android.content.Context
 import androidx.room.Room
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.PodcastDatabase
+import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.preference.PodcastSharedPreferences
+import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.preference.PodcastSharedPreferencesImpl
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.PodcastIndexApi
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.PodcastIndexAuthInterceptor
 import br.ufpe.cin.vrvs.podcastplayer.data.repository.PodcastRepository
@@ -34,6 +36,12 @@ val apiModule = module {
 val databaseModule = module {
     single {
         providePodcastDatabase(get())
+    }
+}
+
+val preferencesModule = module {
+    single {
+        PodcastSharedPreferencesImpl(get()) as PodcastSharedPreferences
     }
 }
 

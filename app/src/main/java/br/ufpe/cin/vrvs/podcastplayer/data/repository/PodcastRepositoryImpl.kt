@@ -8,6 +8,7 @@ import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.table.fromE
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.table.fromPodcast
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.table.toEpisode
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.table.toPodcast
+import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.preference.PodcastSharedPreferences
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.PodcastIndexApi
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.response.toEpisode
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.response.toPodcast
@@ -18,6 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import retrofit2.await
@@ -27,14 +29,39 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
 
     private val podcastDatabase: PodcastDatabase by inject()
     private val podcastIndexApi: PodcastIndexApi by inject()
+    private val podcastSharedPreferences: PodcastSharedPreferences by inject()
 
     private val scope = CoroutineScope(Dispatchers.IO + NonCancellable)
+    private val playedContext = newSingleThreadContext("ScopePlayed")
 
-    private var podcastsFeed: MutableLiveData<Result<List<Podcast>>>  = MutableLiveData()
-    private var podcastsSubscribed: MutableLiveData<Result<List<Podcast>>> = MutableLiveData()
-    private var podcast: MutableLiveData<Result<Podcast>> = MutableLiveData()
-    private var subscribed: MutableLiveData<Result<Boolean>> = MutableLiveData()
-    private var episode: MutableLiveData<Result<Episode>> = MutableLiveData()
+    override fun getPlayedPodcast(): LiveData<Result<Pair<String?, Long?>>> {
+        val podcastPlayedSong: MutableLiveData<Result<Pair<String?, Long?>>>  = MutableLiveData()
+        scope.launch(playedContext) {
+            podcastPlayedSong.postValue(Result.Loading)
+            try {
+                val pair = Pair(podcastSharedPreferences.podcastId, podcastSharedPreferences.podcastTime)
+                podcastPlayedSong.postValue(Result.Success(pair))
+            } catch (e: Exception) {
+                podcastPlayedSong.postValue(Result.Error(mapException(e)))
+            }
+        }
+        return podcastPlayedSong
+    }
+
+    override fun updatePlayedPodcast(id: String, time: Long) {
+        scope.launch(playedContext) {
+            podcastSharedPreferences.podcastId = id
+            podcastSharedPreferences.podcastTime = time
+        }
+    }
+
+    override fun clearPlayedPodcast() {
+        scope.launch(playedContext) {
+            podcastSharedPreferences.clearPodcastId()
+            podcastSharedPreferences.clearPodcastTime()
+        }
+    }
+
 
     override fun getPodcastFeed(): LiveData<Result<List<Podcast>>> {
         val podcastsFeed: MutableLiveData<Result<List<Podcast>>>  = MutableLiveData()
@@ -46,7 +73,23 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
                     Podcast.toPodcast(it)
                 }))
             } catch (e: Exception) {
-                podcastsFeed.postValue(Result.Error(e))
+                podcastsFeed.postValue(Result.Error(mapException(e)))
+            }
+        }
+        return podcastsFeed
+    }
+
+    override fun searchPodcast(query: String): LiveData<Result<List<Podcast>>> {
+        val podcastsFeed: MutableLiveData<Result<List<Podcast>>>  = MutableLiveData()
+        scope.launch {
+            podcastsFeed.postValue(Result.Loading)
+            try {
+                val result = podcastIndexApi.searchPodcasts(query).await()
+                podcastsFeed.postValue(Result.Success(result.feeds.map {
+                    Podcast.toPodcast(it)
+                }))
+            } catch (e: Exception) {
+                podcastsFeed.postValue(Result.Error(mapException(e)))
             }
         }
         return podcastsFeed
@@ -64,7 +107,7 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
                     Podcast.toPodcast(it)
                 }))
             } catch (e: Exception) {
-                podcastsSubscribed.postValue(Result.Error(e))
+                podcastsSubscribed.postValue(Result.Error(mapException(e)))
             }
         }
         return podcastsSubscribed
@@ -77,7 +120,7 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
             try {
                 podcast.postValue(Result.Success(getPodcastAwait(id)))
             } catch (e: Exception) {
-                podcast.postValue(Result.Error(e))
+                podcast.postValue(Result.Error(mapException(e)))
             }
         }
         return podcast
@@ -88,10 +131,9 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
         scope.launch {
             episode.postValue(Result.Loading)
             try {
-                val result = podcastDatabase.podcastDao().getEpisode(id)
-                episode.postValue(Result.Success(Episode.toEpisode(result)))
+                episode.postValue(Result.Success(getEpisodeAwait(id)))
             } catch (e: Exception) {
-                episode.postValue(Result.Error(e))
+                episode.postValue(Result.Error(mapException(e)))
             }
         }
         return episode
@@ -120,7 +162,7 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
                     deleteFile(episode.path)
                 }
             } catch (e: Exception) {
-                updated.postValue(Result.Error(e))
+                updated.postValue(Result.Error(mapException(e)))
             }
         }
         return updated
@@ -133,7 +175,7 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
             try {
                 subscribed.postValue(Result.Success(subscribePodcastAwait(id)))
             } catch (e: Exception) {
-                subscribed.postValue(Result.Error(e))
+                subscribed.postValue(Result.Error(mapException(e)))
             }
         }
         return subscribed
@@ -146,7 +188,7 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
             try {
                 unsubscribed.postValue(Result.Success(unsubscribePodcastAwait(id)))
             } catch (e: Exception) {
-                unsubscribed.postValue(Result.Error(e))
+                unsubscribed.postValue(Result.Error(mapException(e)))
             }
         }
         return unsubscribed
@@ -223,5 +265,23 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
             }
         }
         return answer
+    }
+
+    private suspend fun getEpisodeAwait(id: String): Episode {
+        val db = podcastDatabase.podcastDao()
+        val answer: Episode
+        if (db.hasEpisode(id)) {
+            var episodeResult = db.getEpisode(id)
+            answer = Episode.toEpisode(episodeResult)
+        } else {
+            val episodeResult = podcastIndexApi.getEpisode(id.toInt()).await()
+            answer = Episode.toEpisode(episodeResult.episode)
+        }
+        return answer
+    }
+    
+    private fun mapException(e: Exception): Exception {
+        // TODO: map exceptions
+        return e
     }
 }

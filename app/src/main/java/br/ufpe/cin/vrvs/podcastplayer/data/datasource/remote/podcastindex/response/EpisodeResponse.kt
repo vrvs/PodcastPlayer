@@ -13,16 +13,16 @@ class EpisodeResponse {
     var podcastId: Int = -1
 
     @SerializedName("title")
-    lateinit var title: String
+    var title: String? = null
 
     @SerializedName("description")
-    lateinit var description: String
+    var description: String? = null
 
     @SerializedName("enclosureUrl")
-    lateinit var audioUrl: String
+    var audioUrl: String? = null
 
     @SerializedName("feedImage")
-    lateinit var imageUrl: String
+    var imageUrl: String? = null
 
     @SerializedName("datePublished")
     var datePublished: Long = 0L
@@ -43,13 +43,19 @@ class EpisodesResponse {
     lateinit var episodes: List<EpisodeResponse>
 }
 
+class EpisodeByIdResponse {
+
+    @SerializedName("episode")
+    lateinit var episode: EpisodeResponse
+}
+
 fun Companion.toEpisode(episodeResponse: EpisodeResponse) = Episode(
     id = episodeResponse.id.toString(),
     podcastId = episodeResponse.podcastId.toString(),
-    title = episodeResponse.title,
-    description = episodeResponse.description,
-    audioUrl = episodeResponse.audioUrl,
-    imageUrl = episodeResponse.imageUrl,
+    title = episodeResponse.title.orEmpty(),
+    description = episodeResponse.description.orEmpty(),
+    audioUrl = episodeResponse.audioUrl.orEmpty(),
+    imageUrl = episodeResponse.imageUrl.orEmpty(),
     datePublished = episodeResponse.datePublished,
     duration = episodeResponse.duration,
     episode = episodeResponse.episode,

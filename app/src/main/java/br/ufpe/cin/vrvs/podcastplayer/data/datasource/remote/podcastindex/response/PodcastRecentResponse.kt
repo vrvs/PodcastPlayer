@@ -10,13 +10,13 @@ open class PodcastRecentResponse {
     var id: Int = -1
 
     @SerializedName("title")
-    lateinit var title: String
+    var title: String? = null
 
     @SerializedName("image")
-    lateinit var imageUrl: String
+    var imageUrl: String? = null
 
     @SerializedName("categories")
-    lateinit var categories: Map<String, String>
+    var categories: Map<String, String>? = emptyMap()
 }
 
 class PodcastsRecentResponse {
@@ -27,7 +27,7 @@ class PodcastsRecentResponse {
 
 fun Companion.toPodcast(podcastRecentResponse: PodcastRecentResponse) = Podcast(
     id = podcastRecentResponse.id.toString(),
-    title = podcastRecentResponse.title,
-    imageUrl = podcastRecentResponse.imageUrl,
-    categories = podcastRecentResponse.categories
+    title = podcastRecentResponse.title.orEmpty(),
+    imageUrl = podcastRecentResponse.imageUrl.orEmpty(),
+    categories = podcastRecentResponse.categories ?: emptyMap()
 )

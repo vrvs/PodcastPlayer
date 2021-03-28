@@ -1,5 +1,6 @@
 package br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex
 
+import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.response.EpisodeByIdResponse
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.response.EpisodesResponse
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.response.PodcastByIdResponse
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.response.PodcastsRecentResponse
@@ -43,4 +44,11 @@ interface PodcastIndexApi {
         @Query("id") podcastId: String,
         @QueryName pretty: String = "pretty"
     ) : Call<EpisodesResponse>
+
+    @Headers("Accept: application/json")
+    @GET("episodes/byid")
+    fun getEpisode(
+        @Query("id") episodeId: Int,
+        @QueryName pretty: String = "pretty"
+    ) : Call<EpisodeByIdResponse>
 }
