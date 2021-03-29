@@ -9,8 +9,11 @@ import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.Podcas
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.PodcastIndexAuthInterceptor
 import br.ufpe.cin.vrvs.podcastplayer.data.repository.PodcastRepository
 import br.ufpe.cin.vrvs.podcastplayer.data.repository.PodcastRepositoryImpl
+import br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcast.SubscribedPodcastViewModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.core.component.KoinApiExtension
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -45,14 +48,18 @@ val preferencesModule = module {
     }
 }
 
+@OptIn(KoinApiExtension::class)
 val repositoryModule = module {
     single {
         PodcastRepositoryImpl() as PodcastRepository
     }
 }
 
+@OptIn(KoinApiExtension::class)
 val viewModelModule = module {
-
+    viewModel {
+        SubscribedPodcastViewModel()
+    }
 }
 
 private fun provideHttpLoggingInterceptor() =

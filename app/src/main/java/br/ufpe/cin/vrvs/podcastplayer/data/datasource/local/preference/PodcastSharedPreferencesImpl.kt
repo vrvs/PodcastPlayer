@@ -12,7 +12,7 @@ class PodcastSharedPreferencesImpl(context: Context) : PodcastSharedPreferences 
         private const val PODCAST_TIME = "PodcastTime"
     }
 
-    private val sharedPreferences: SharedPreferences;
+    private val sharedPreferences: SharedPreferences
 
     init {
         sharedPreferences = context.getSharedPreferences(PODCAST_SHARED_PREFERENCES, MODE_PRIVATE)

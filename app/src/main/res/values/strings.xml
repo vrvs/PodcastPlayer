@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Podcast Player</string>
+    <!-- Home Screen -->
+    <string name="podcast_home_title">Subscribed Podcasts</string>
+
+    <!-- Loading Screen -->
+    <string name="loading_text">Loading...</string>
+
+    <!-- Error Screen -->
+    <string name="error_generic_text">Oops! Something went wrong!</string>
+    <string name="try_again_button_text">Try again</string>
 </resources>

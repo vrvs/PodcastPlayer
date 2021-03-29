@@ -18,13 +18,16 @@ import br.ufpe.cin.vrvs.podcastplayer.data.model.Result
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.newSingleThreadContext
+import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import retrofit2.await
 import java.io.File
+import java.util.concurrent.Executors
 
+@KoinApiExtension
 class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
 
     private val podcastDatabase: PodcastDatabase by inject()
@@ -32,7 +35,7 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
     private val podcastSharedPreferences: PodcastSharedPreferences by inject()
 
     private val scope = CoroutineScope(Dispatchers.IO + NonCancellable)
-    private val playedContext = newSingleThreadContext("ScopePlayed")
+    private val playedContext = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
     override fun getPlayedPodcast(): LiveData<Result<Pair<String?, Long?>>> {
         val podcastPlayedSong: MutableLiveData<Result<Pair<String?, Long?>>>  = MutableLiveData()
@@ -270,12 +273,12 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
     private suspend fun getEpisodeAwait(id: String): Episode {
         val db = podcastDatabase.podcastDao()
         val answer: Episode
-        if (db.hasEpisode(id)) {
-            var episodeResult = db.getEpisode(id)
-            answer = Episode.toEpisode(episodeResult)
+        answer = if (db.hasEpisode(id)) {
+            val episodeResult = db.getEpisode(id)
+            Episode.toEpisode(episodeResult)
         } else {
             val episodeResult = podcastIndexApi.getEpisode(id.toInt()).await()
-            answer = Episode.toEpisode(episodeResult.episode)
+            Episode.toEpisode(episodeResult.episode)
         }
         return answer
     }

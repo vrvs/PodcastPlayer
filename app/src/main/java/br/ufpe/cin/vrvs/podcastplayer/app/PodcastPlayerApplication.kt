@@ -12,7 +12,7 @@ import org.koin.core.context.startKoin
 
 class PodcastPlayerApplication : Application() {
 
-    val modules = listOf(
+    private val modules = listOf(
         apiModule,
         databaseModule,
         preferencesModule,
