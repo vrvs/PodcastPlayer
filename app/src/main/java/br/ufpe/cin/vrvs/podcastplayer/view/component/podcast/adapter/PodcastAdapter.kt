@@ -1,18 +1,23 @@
 package br.ufpe.cin.vrvs.podcastplayer.view.component.podcast.adapter
 
+import android.content.Context
+import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import br.ufpe.cin.vrvs.podcastplayer.R
 import br.ufpe.cin.vrvs.podcastplayer.data.model.Podcast
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.squareup.picasso.Picasso
 
-internal class PodcastAdapter : RecyclerView.Adapter<PodcastAdapter.ViewHolder>() {
+internal class PodcastAdapter(val context: Context) : RecyclerView.Adapter<PodcastAdapter.ViewHolder>() {
 
     var dataSet: List<Podcast> = emptyList()
         set(value) {
@@ -26,6 +31,7 @@ internal class PodcastAdapter : RecyclerView.Adapter<PodcastAdapter.ViewHolder>(
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView by lazy { view.findViewById<TextView>(R.id.title) }
         val imageView: ImageView by lazy { view.findViewById<ImageView>(R.id.icon) }
+        val chipGroup: ChipGroup by lazy { view.findViewById<ChipGroup>(R.id.chip_group)}
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int) =
@@ -54,6 +60,23 @@ internal class PodcastAdapter : RecyclerView.Adapter<PodcastAdapter.ViewHolder>(
                     .into(viewHolder.imageView)
             }
         }
+
+        viewHolder.chipGroup.apply {
+            this.removeAllViews()
+        }.also { chipGroup ->
+            dataSet[position].categories.values.map { category ->
+                val chip = Chip(context)
+                chip.apply {
+                    text = category
+                    setTextAppearance(R.style.ChipTextStyle)
+                    chipBackgroundColor = ResourcesCompat.getColorStateList(context.resources, R.color.black, null)
+                }
+            }.forEach {
+                chipGroup.addView(it)
+            }
+        }
+
+        // clicked item action
         viewHolder.itemView.setOnClickListener {
             _itemClicked.postValue(dataSet[position].id)
         }

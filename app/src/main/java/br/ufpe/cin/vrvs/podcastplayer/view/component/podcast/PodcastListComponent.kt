@@ -31,7 +31,7 @@ class PodcastListComponent @JvmOverloads constructor(
         observer = Observer {
             _itemClicked.postValue(it)
         }
-        list.adapter = PodcastAdapter().also {
+        list.adapter = PodcastAdapter(context).also {
             it.itemClicked.observeForever(observer)
         }
     }
