@@ -9,4 +9,13 @@
     <!-- Error Screen -->
     <string name="error_generic_text">Oops! Something went wrong!</string>
     <string name="try_again_button_text">Try again</string>
+
+    <!-- Podcast Component -->
+    <string name="none_category">None</string>
+
+    <!-- Home Screen -->
+    <string name="podcast_search_title_first">PODCAST</string>
+    <string name="podcast_search_title_second">SEARCH</string>
+    <string name="podcast_search_hint">Search</string>
+    <string name="podcast_search_empty_search_not_allowed">Empty query not allowed. Type something.</string>
 </resources>

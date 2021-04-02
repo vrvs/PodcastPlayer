@@ -4,12 +4,15 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import br.ufpe.cin.vrvs.podcastplayer.R
 import br.ufpe.cin.vrvs.podcastplayer.databinding.FragmentPodcastHomeBinding
 import br.ufpe.cin.vrvs.podcastplayer.view.component.error.ErrorComponent
 import br.ufpe.cin.vrvs.podcastplayer.view.component.podcast.PodcastListComponent
+import br.ufpe.cin.vrvs.podcastplayer.view.search.PodcastSearchFragment
 import br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcast.SubscribedPodcastViewModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class PodcastHomeFragment : Fragment(R.layout.fragment_podcast_home) {
@@ -19,6 +22,7 @@ class PodcastHomeFragment : Fragment(R.layout.fragment_podcast_home) {
     private lateinit var list: PodcastListComponent
     private lateinit var error: ErrorComponent
     private lateinit var refresh: SwipeRefreshLayout
+    private lateinit var searchButton: FloatingActionButton
 
     override fun onViewCreated(
         view: View,
@@ -29,6 +33,7 @@ class PodcastHomeFragment : Fragment(R.layout.fragment_podcast_home) {
         list = view.findViewById(R.id.subscribed_list)
         refresh = view.findViewById(R.id.swipe_refresh)
         error = view.findViewById(R.id.error_screen)
+        searchButton = view.findViewById(R.id.floating_button)
 
         FragmentPodcastHomeBinding.bind(view).apply {
             viewModel = spViewModel
@@ -49,6 +54,10 @@ class PodcastHomeFragment : Fragment(R.layout.fragment_podcast_home) {
         error.buttonClicked.observe(viewLifecycleOwner, Observer {
             spViewModel.refreshSubscribedPodcast()
         })
+        searchButton.setOnClickListener {
+            val action = PodcastHomeFragmentDirections.actionPodcastHomeFragmentToPodcastSearchFragment()
+            findNavController().navigate(action)
+        }
 
         spViewModel.refreshSubscribedPodcast()
     }

@@ -64,7 +64,10 @@ internal class PodcastAdapter(val context: Context) : RecyclerView.Adapter<Podca
         viewHolder.chipGroup.apply {
             this.removeAllViews()
         }.also { chipGroup ->
-            dataSet[position].categories.values.map { category ->
+            dataSet[position].categories.values.ifEmpty {
+                val categoryNone = context.getString(R.string.none_category)
+                listOf(categoryNone)
+            }.map { category ->
                 val chip = Chip(context)
                 chip.apply {
                     text = category

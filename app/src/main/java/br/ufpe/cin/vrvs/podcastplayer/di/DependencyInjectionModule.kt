@@ -9,6 +9,7 @@ import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.Podcas
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.PodcastIndexAuthInterceptor
 import br.ufpe.cin.vrvs.podcastplayer.data.repository.PodcastRepository
 import br.ufpe.cin.vrvs.podcastplayer.data.repository.PodcastRepositoryImpl
+import br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcast.SearchPodcastViewModel
 import br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcast.SubscribedPodcastViewModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -59,6 +60,9 @@ val repositoryModule = module {
 val viewModelModule = module {
     viewModel {
         SubscribedPodcastViewModel()
+    }
+    viewModel {
+        SearchPodcastViewModel()
     }
 }
 

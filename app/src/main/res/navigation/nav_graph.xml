@@ -6,5 +6,17 @@
     <fragment
         android:id="@+id/podcastHomeFragment"
         android:name="br.ufpe.cin.vrvs.podcastplayer.view.home.PodcastHomeFragment"
-        android:label="PodcastHomeFragment" />
+        android:label="PodcastHomeFragment" >
+        <action
+            android:id="@+id/action_podcastHomeFragment_to_podcastSearchFragment"
+            app:destination="@id/podcastSearchFragment"
+            app:enterAnim="@anim/fragment_close_enter"
+            app:exitAnim="@anim/fragment_close_exit"
+            app:popEnterAnim="@anim/fragment_open_enter"
+            app:popExitAnim="@anim/fragment_fade_exit" />
+    </fragment>
+    <fragment
+        android:id="@+id/podcastSearchFragment"
+        android:name="br.ufpe.cin.vrvs.podcastplayer.view.search.PodcastSearchFragment"
+        android:label="PodcastSearchFragment" />
 </navigation>
