@@ -121,7 +121,7 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
         scope.launch {
             podcast.postValue(Result.Loading)
             try {
-                podcast.postValue(Result.Success(getPodcastAwait(id)))
+                getPodcastAwait(id, podcast)
             } catch (e: Exception) {
                 podcast.postValue(Result.Error(mapException(e)))
             }
@@ -171,8 +171,8 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
         return updated
     }
 
-    override fun subscribePodcast(id: String): LiveData<Result<Boolean>> {
-        val subscribed: MutableLiveData<Result<Boolean>> = MutableLiveData()
+    override fun subscribePodcast(id: String): LiveData<Result<String>> {
+        val subscribed: MutableLiveData<Result<String>> = MutableLiveData()
         scope.launch {
             subscribed.postValue(Result.Loading)
             try {
@@ -184,8 +184,8 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
         return subscribed
     }
 
-    override fun unsubscribePodcast(id: String): LiveData<Result<Boolean>> {
-        val unsubscribed: MutableLiveData<Result<Boolean>> = MutableLiveData()
+    override fun unsubscribePodcast(id: String): LiveData<Result<String>> {
+        val unsubscribed: MutableLiveData<Result<String>> = MutableLiveData()
         scope.launch {
             unsubscribed.postValue(Result.Loading)
             try {
@@ -197,7 +197,7 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
         return unsubscribed
     }
 
-    private suspend fun unsubscribePodcastAwait(id: String): Boolean {
+    private suspend fun unsubscribePodcastAwait(id: String): String {
         val db = podcastDatabase.podcastDao()
         db.clearPodcast(id)
         val episodes = db.getPodcastEpisodes(id)
@@ -207,7 +207,7 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
         }.forEach {
             deleteFile(it.path)
         }
-        return true
+        return id
     }
 
     private fun deleteFile(path: String) {
@@ -217,7 +217,7 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
         }
     }
 
-    private suspend fun subscribePodcastAwait(id: String): Boolean {
+    private suspend fun subscribePodcastAwait(id: String): String {
         val podcast = getPodcastAwait(id)
         val db = podcastDatabase.podcastDao()
         if (!db.hasPodcast(id)) {
@@ -227,10 +227,10 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
                 db.insertEpisode(Episode.fromEpisode(it))
             }
         }
-        return true
+        return id
     }
 
-    private suspend fun getPodcastAwait(id: String): Podcast {
+    private suspend fun getPodcastAwait(id: String, liveData: MutableLiveData<Result<Podcast>>? = null): Podcast {
         val db = podcastDatabase.podcastDao()
         val answer: Podcast
         if (db.hasPodcast(id)) {
@@ -240,6 +240,7 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
             answer.episodes = episodeResult.map {
                 Episode.toEpisode(it)
             }
+            liveData?.postValue(Result.Success(answer))
             try {
                 val episodeResultApi = podcastIndexApi.getEpisodes(id).await()
                 val newEpisodes = episodeResultApi.episodes.filter { episodeRemote ->
@@ -256,6 +257,7 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
                 answer.episodes = episodeResult.map {
                     Episode.toEpisode(it)
                 }
+                liveData?.postValue(Result.Success(answer))
             } catch (e: Exception) {
                 // Do nothing - use local values
             }
@@ -266,6 +268,7 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
             answer.episodes = episodeResult.episodes.map {
                 Episode.toEpisode(it)
             }
+            liveData?.postValue(Result.Success(answer))
         }
         return answer
     }

@@ -1,11 +1,9 @@
 package br.ufpe.cin.vrvs.podcastplayer.view.component.podcast.adapter
 
 import android.content.Context
-import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.LiveData
@@ -13,9 +11,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import br.ufpe.cin.vrvs.podcastplayer.R
 import br.ufpe.cin.vrvs.podcastplayer.data.model.Podcast
+import br.ufpe.cin.vrvs.podcastplayer.view.component.image.ImageComponent
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.squareup.picasso.Picasso
 
 internal class PodcastAdapter(val context: Context) : RecyclerView.Adapter<PodcastAdapter.ViewHolder>() {
 
@@ -30,7 +28,7 @@ internal class PodcastAdapter(val context: Context) : RecyclerView.Adapter<Podca
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView by lazy { view.findViewById<TextView>(R.id.title) }
-        val imageView: ImageView by lazy { view.findViewById<ImageView>(R.id.icon) }
+        val imageComponent: ImageComponent by lazy { view.findViewById<ImageComponent>(R.id.image_component) }
         val chipGroup: ChipGroup by lazy { view.findViewById<ChipGroup>(R.id.chip_group)}
     }
 
@@ -45,21 +43,7 @@ internal class PodcastAdapter(val context: Context) : RecyclerView.Adapter<Podca
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         viewHolder.title.text = dataSet[position].title
-        process(dataSet[position].imageUrl).let {
-            if (it.isNotEmpty()) {
-                Picasso
-                    .get()
-                    .load(process(dataSet[position].imageUrl))
-                    .resize(45, 45)
-                    .error(R.drawable.ic_announcement_white_18dp)
-                    .into(viewHolder.imageView)
-            } else {
-                Picasso
-                    .get()
-                    .load(R.drawable.ic_announcement_white_18dp)
-                    .into(viewHolder.imageView)
-            }
-        }
+        viewHolder.imageComponent.render(dataSet[position].imageUrl)
 
         viewHolder.chipGroup.apply {
             this.removeAllViews()
@@ -86,10 +70,4 @@ internal class PodcastAdapter(val context: Context) : RecyclerView.Adapter<Podca
     }
 
     override fun getItemCount() = dataSet.size
-
-    private fun process(url: String): String {
-        if ("https" in url)
-            return url
-        return url.replace("http", "https")
-    }
 }

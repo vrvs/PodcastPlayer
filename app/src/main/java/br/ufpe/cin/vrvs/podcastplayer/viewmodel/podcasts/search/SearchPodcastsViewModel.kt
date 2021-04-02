@@ -1,6 +1,8 @@
-package br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcast
+package br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcasts.search
 
-class SearchPodcastViewModel : BasePodcastViewModel() {
+import br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcasts.BasePodcastsViewModel
+
+class SearchPodcastsViewModel : BasePodcastsViewModel() {
 
     fun searchPodcasts(query: String) {
         postValues(loading = false, error = false, podcasts = emptyList())

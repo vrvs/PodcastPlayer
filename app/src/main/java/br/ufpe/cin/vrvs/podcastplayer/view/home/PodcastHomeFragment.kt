@@ -10,14 +10,13 @@ import br.ufpe.cin.vrvs.podcastplayer.R
 import br.ufpe.cin.vrvs.podcastplayer.databinding.FragmentPodcastHomeBinding
 import br.ufpe.cin.vrvs.podcastplayer.view.component.error.ErrorComponent
 import br.ufpe.cin.vrvs.podcastplayer.view.component.podcast.PodcastListComponent
-import br.ufpe.cin.vrvs.podcastplayer.view.search.PodcastSearchFragment
-import br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcast.SubscribedPodcastViewModel
+import br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcasts.subscribed.SubscribedPodcastsViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class PodcastHomeFragment : Fragment(R.layout.fragment_podcast_home) {
 
-    private val spViewModel: SubscribedPodcastViewModel by viewModel()
+    private val spViewModel: SubscribedPodcastsViewModel by viewModel()
     private var mBinding: FragmentPodcastHomeBinding? = null
     private lateinit var list: PodcastListComponent
     private lateinit var error: ErrorComponent
@@ -49,7 +48,8 @@ class PodcastHomeFragment : Fragment(R.layout.fragment_podcast_home) {
             spViewModel.refreshSubscribedPodcast()
         }
         list.itemClicked.observe(viewLifecycleOwner, Observer {
-            // Navigate to Podcast Page
+            val action = PodcastHomeFragmentDirections.actionPodcastHomeFragmentToPodcastDetailsFragment(it)
+            findNavController().navigate(action)
         })
         error.buttonClicked.observe(viewLifecycleOwner, Observer {
             spViewModel.refreshSubscribedPodcast()

@@ -1,6 +1,8 @@
-package br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcast
+package br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcasts.subscribed
 
-class SubscribedPodcastViewModel : BasePodcastViewModel() {
+import br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcasts.BasePodcastsViewModel
+
+class SubscribedPodcastsViewModel : BasePodcastsViewModel() {
 
     fun refreshSubscribedPodcast() {
         postValues(loading = false, error = false, podcasts = emptyList())

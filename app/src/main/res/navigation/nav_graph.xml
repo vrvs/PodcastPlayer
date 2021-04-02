@@ -14,9 +14,32 @@
             app:exitAnim="@anim/fragment_close_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_fade_exit" />
+        <action
+            android:id="@+id/action_podcastHomeFragment_to_podcastDetailsFragment"
+            app:destination="@id/podcastDetailsFragment"
+            app:enterAnim="@anim/fragment_close_enter"
+            app:exitAnim="@anim/fragment_close_exit"
+            app:popEnterAnim="@anim/fragment_open_enter"
+            app:popExitAnim="@anim/fragment_open_exit" />
     </fragment>
     <fragment
         android:id="@+id/podcastSearchFragment"
         android:name="br.ufpe.cin.vrvs.podcastplayer.view.search.PodcastSearchFragment"
-        android:label="PodcastSearchFragment" />
+        android:label="PodcastSearchFragment" >
+        <action
+            android:id="@+id/action_podcastSearchFragment_to_podcastDetailsFragment"
+            app:destination="@id/podcastDetailsFragment"
+            app:enterAnim="@anim/fragment_close_enter"
+            app:exitAnim="@anim/fragment_close_exit"
+            app:popEnterAnim="@anim/fragment_open_enter"
+            app:popExitAnim="@anim/fragment_open_exit" />
+    </fragment>
+    <fragment
+        android:id="@+id/podcastDetailsFragment"
+        android:name="br.ufpe.cin.vrvs.podcastplayer.view.podcast.PodcastDetailsFragment"
+        android:label="PodcastDetailsFragment" >
+        <argument
+            android:name="id"
+            app:argType="string" />
+    </fragment>
 </navigation>

@@ -9,18 +9,19 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import br.ufpe.cin.vrvs.podcastplayer.R
 import br.ufpe.cin.vrvs.podcastplayer.databinding.FragmentPodcastSearchBinding
 import br.ufpe.cin.vrvs.podcastplayer.view.component.error.ErrorComponent
 import br.ufpe.cin.vrvs.podcastplayer.view.component.podcast.PodcastListComponent
-import br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcast.SearchPodcastViewModel
+import br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcasts.search.SearchPodcastsViewModel
 import com.google.android.material.textfield.TextInputEditText
 import org.koin.android.viewmodel.ext.android.viewModel
 
 
 class PodcastSearchFragment : Fragment(R.layout.fragment_podcast_search) {
 
-    private val spViewModel: SearchPodcastViewModel by viewModel()
+    private val spViewModel: SearchPodcastsViewModel by viewModel()
     private var mBinding: FragmentPodcastSearchBinding? = null
     private lateinit var list: PodcastListComponent
     private lateinit var error: ErrorComponent
@@ -47,7 +48,8 @@ class PodcastSearchFragment : Fragment(R.layout.fragment_podcast_search) {
         })
 
         list.itemClicked.observe(viewLifecycleOwner, Observer {
-            // Navigate to Podcast Page
+            val action = PodcastSearchFragmentDirections.actionPodcastSearchFragmentToPodcastDetailsFragment(it)
+            findNavController().navigate(action)
         })
         searchText.setOnEditorActionListener { v, actionId, _ ->
             hideKeyboard(v)

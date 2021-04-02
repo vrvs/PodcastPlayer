@@ -15,6 +15,6 @@ interface PodcastRepository {
     fun getPodcast(id: String) : LiveData<Result<Podcast>>
     fun getEpisode(id: String) : LiveData<Result<Episode>>
     fun updateDownloadedEpisode(episode: Episode, downloaded: Boolean, path: String = ""): LiveData<Result<Boolean>>
-    fun subscribePodcast(id: String) : LiveData<Result<Boolean>>
-    fun unsubscribePodcast(id: String): LiveData<Result<Boolean>>
+    fun subscribePodcast(id: String) : LiveData<Result<String>>
+    fun unsubscribePodcast(id: String): LiveData<Result<String>>
 }

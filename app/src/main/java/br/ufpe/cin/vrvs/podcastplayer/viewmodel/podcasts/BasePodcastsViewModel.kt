@@ -1,4 +1,4 @@
-package br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcast
+package br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcasts
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,7 +12,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 @KoinApiExtension
-abstract class BasePodcastViewModel : BaseViewModel(), KoinComponent {
+abstract class BasePodcastsViewModel : BaseViewModel(), KoinComponent {
 
     protected val podcastRepository: PodcastRepository by inject()
 
