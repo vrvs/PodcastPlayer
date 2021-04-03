@@ -21,6 +21,9 @@ class EpisodeResponse {
     @SerializedName("enclosureUrl")
     var audioUrl: String? = null
 
+    @SerializedName("enclosureType")
+    var audioType: String? = null
+
     @SerializedName("feedImage")
     var imageUrl: String? = null
 
@@ -55,6 +58,7 @@ fun Companion.toEpisode(episodeResponse: EpisodeResponse) = Episode(
     title = episodeResponse.title.orEmpty(),
     description = episodeResponse.description.orEmpty(),
     audioUrl = episodeResponse.audioUrl.orEmpty(),
+    audioType = episodeResponse.audioType.orEmpty(),
     imageUrl = episodeResponse.imageUrl.orEmpty(),
     datePublished = episodeResponse.datePublished,
     duration = episodeResponse.duration,

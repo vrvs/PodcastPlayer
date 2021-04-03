@@ -6,12 +6,13 @@ data class Episode(
     var title: String,
     var description: String,
     var audioUrl: String,
+    var audioType: String,
     var imageUrl: String,
     var datePublished: Long,
     var duration: Int,
     var episode: Int,
     var season: Int,
-    var downloaded: Boolean = false,
+    var downloadId: Long? = null,
     var path: String = ""
 ) {
     companion object

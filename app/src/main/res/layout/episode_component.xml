@@ -22,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <br.ufpe.cin.vrvs.podcastplayer.view.component.image.ImageComponent
+                <br.ufpe.cin.vrvs.podcastplayer.view.component.image.SquareRoundedImageComponent
                     android:id="@+id/image_component"
                     android:layout_width="45dp"
                     android:layout_height="45dp"/>

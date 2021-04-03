@@ -26,6 +26,15 @@ class PodcastDetailsViewModel : BaseViewModel(), KoinComponent {
         }
     }
 
+    private var answerUpdate: LiveData<Result<Podcast>>? = null
+    private val podcastUpdateObserver = Observer<Result<Podcast>> {
+        when (it) {
+            is Result.Success -> postValues(loading = false, error = false, podcast = it.data)
+            is Result.Loading -> {}
+            is Result.Error -> postValues(loading = false, error = true, podcast = null)
+        }
+    }
+
     private var answerSubs: LiveData<Result<String>>? = null
     private val subsObserver = Observer<Result<String>> {
         when (it) {
@@ -40,6 +49,13 @@ class PodcastDetailsViewModel : BaseViewModel(), KoinComponent {
         answer?.removeObserver(podcastObserver)
         answer = podcastRepository.getPodcast(id)
         answer?.observeForever(podcastObserver)
+    }
+
+    fun updatePodcast(id: String) {
+        postValues(loading = false, error = false, podcast = null)
+        answerUpdate?.removeObserver(podcastUpdateObserver)
+        answerUpdate = podcastRepository.getPodcast(id)
+        answerUpdate?.observeForever(podcastUpdateObserver)
     }
 
     fun subscribePodcast(id: String) {

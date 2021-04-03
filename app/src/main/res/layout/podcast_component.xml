@@ -7,7 +7,7 @@
     android:layout_marginBottom="10dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <br.ufpe.cin.vrvs.podcastplayer.view.component.image.ImageComponent
+    <br.ufpe.cin.vrvs.podcastplayer.view.component.image.SquareRoundedImageComponent
         android:id="@+id/image_component"
         android:layout_width="60dp"
         android:layout_height="60dp"/>

@@ -7,12 +7,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import br.ufpe.cin.vrvs.podcastplayer.R
 import br.ufpe.cin.vrvs.podcastplayer.data.model.Episode
+import br.ufpe.cin.vrvs.podcastplayer.services.download.DownloadUtils.isDownloaded
+import br.ufpe.cin.vrvs.podcastplayer.services.download.DownloadUtils.isInProgress
 import br.ufpe.cin.vrvs.podcastplayer.view.component.image.ImageButtonComponent
-import br.ufpe.cin.vrvs.podcastplayer.view.component.image.ImageComponent
+import br.ufpe.cin.vrvs.podcastplayer.view.component.image.SquareRoundedImageComponent
 
 internal class EpisodeAdapter(val context: Context) : RecyclerView.Adapter<EpisodeAdapter.ViewHolder>() {
 
@@ -24,13 +25,13 @@ internal class EpisodeAdapter(val context: Context) : RecyclerView.Adapter<Episo
 
     private val _itemClicked = MutableLiveData<String>()
     val itemClicked: LiveData<String> = _itemClicked
-    private val _buttonClicked = MutableLiveData<Pair<String, ImageButtonComponent.Type>>()
-    val buttonClicked: LiveData<Pair<String, ImageButtonComponent.Type>> = _buttonClicked
+    private val _buttonClicked = MutableLiveData<Pair<Episode, ImageButtonComponent.Type>>()
+    val buttonClicked: LiveData<Pair<Episode, ImageButtonComponent.Type>> = _buttonClicked
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView by lazy { view.findViewById<TextView>(R.id.title) }
         val date: TextView by lazy { view.findViewById<TextView>(R.id.date) }
-        val imageComponent: ImageComponent by lazy { view.findViewById<ImageComponent>(R.id.image_component) }
+        val squareRoundedImageComponent: SquareRoundedImageComponent by lazy { view.findViewById<SquareRoundedImageComponent>(R.id.image_component) }
         val description: TextView by lazy { view.findViewById<TextView>(R.id.description) }
         val duration: TextView by lazy { view.findViewById<TextView>(R.id.duration) }
         val playPause: ImageButtonComponent by lazy { view.findViewById<ImageButtonComponent>(R.id.play_pause) }
@@ -51,25 +52,29 @@ internal class EpisodeAdapter(val context: Context) : RecyclerView.Adapter<Episo
         viewHolder.apply {
             title.text = data.title
             date.text = data.datePublished.toString()
-            imageComponent.render(data.imageUrl)
+            squareRoundedImageComponent.render(data.imageUrl)
             description.text = data.description
-            duration.text = "${data.duration} MIN"
+            duration.text = "${data.duration} SEC"
 
-            if (data.downloaded) {
+            if (data.isDownloaded(context)) {
                 playPause.setOnClickListener {
-                    _buttonClicked.postValue(Pair(data.id, playPause.state))
+                    _buttonClicked.postValue(Pair(data, playPause.state))
                     playPause.nextState()
                 }
-
                 downloadStopDelete.state = ImageButtonComponent.Type.DOWNLOADED
+                playPause.isEnabled = true
             } else {
+                if (data.isInProgress(context)) {
+                    downloadStopDelete.state = ImageButtonComponent.Type.STOP
+                } else {
+                    downloadStopDelete.state = ImageButtonComponent.Type.DOWNLOAD
+                }
                 playPause.isEnabled = false
-                downloadStopDelete.state = ImageButtonComponent.Type.DOWNLOAD
             }
             playPause.state = ImageButtonComponent.Type.PLAY
 
             downloadStopDelete.setOnClickListener {
-                _buttonClicked.postValue(Pair(data.id, downloadStopDelete.state))
+                _buttonClicked.postValue(Pair(data, downloadStopDelete.state))
                 downloadStopDelete.nextState()
             }
 

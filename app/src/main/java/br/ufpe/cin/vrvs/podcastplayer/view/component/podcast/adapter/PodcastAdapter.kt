@@ -11,7 +11,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import br.ufpe.cin.vrvs.podcastplayer.R
 import br.ufpe.cin.vrvs.podcastplayer.data.model.Podcast
-import br.ufpe.cin.vrvs.podcastplayer.view.component.image.ImageComponent
+import br.ufpe.cin.vrvs.podcastplayer.view.component.image.SquareRoundedImageComponent
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 
@@ -28,7 +28,7 @@ internal class PodcastAdapter(val context: Context) : RecyclerView.Adapter<Podca
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView by lazy { view.findViewById<TextView>(R.id.title) }
-        val imageComponent: ImageComponent by lazy { view.findViewById<ImageComponent>(R.id.image_component) }
+        val squareRoundedImageComponent: SquareRoundedImageComponent by lazy { view.findViewById<SquareRoundedImageComponent>(R.id.image_component) }
         val chipGroup: ChipGroup by lazy { view.findViewById<ChipGroup>(R.id.chip_group)}
     }
 
@@ -43,7 +43,7 @@ internal class PodcastAdapter(val context: Context) : RecyclerView.Adapter<Podca
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         viewHolder.title.text = dataSet[position].title
-        viewHolder.imageComponent.render(dataSet[position].imageUrl)
+        viewHolder.squareRoundedImageComponent.render(dataSet[position].imageUrl)
 
         viewHolder.chipGroup.apply {
             this.removeAllViews()

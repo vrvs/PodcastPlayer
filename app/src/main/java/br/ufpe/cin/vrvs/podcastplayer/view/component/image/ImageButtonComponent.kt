@@ -60,7 +60,7 @@ class ImageButtonComponent @JvmOverloads constructor(
             Type.PLAY -> Type.PAUSE
             Type.PAUSE -> Type.PLAY
             Type.DOWNLOAD -> Type.STOP
-            Type.STOP -> Type.DOWNLOADED
+            Type.STOP -> Type.DOWNLOAD
             Type.DOWNLOADED -> Type.DOWNLOAD
             Type.NONE -> Type.NONE
         }

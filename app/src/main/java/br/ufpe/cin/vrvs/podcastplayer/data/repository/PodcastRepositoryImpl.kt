@@ -142,27 +142,27 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
         return episode
     }
 
-    override fun updateDownloadedEpisode(episode: Episode, downloaded: Boolean, path: String): LiveData<Result<Boolean>> {
+    override fun updateDownloadedEpisode(episodeId: String, podcastId: String, downloadId: Long?, path: String): LiveData<Result<Boolean>> {
         val updated: MutableLiveData<Result<Boolean>> = MutableLiveData()
         scope.launch {
             updated.postValue(Result.Loading)
             try {
                 val db = podcastDatabase.podcastDao()
                 when {
-                    db.hasEpisode(episode.id) -> {
-                        db.updateDownloaded(EpisodePersistedDownloaded(episode.id,downloaded, path))
+                    db.hasEpisode(episodeId) -> {
+                        db.updateDownloaded(EpisodePersistedDownloaded(episodeId,downloadId, path))
                     }
-                    db.hasPodcast(episode.podcastId) -> {
-                        getPodcastAwait(episode.podcastId)
-                        db.updateDownloaded(EpisodePersistedDownloaded(episode.id,downloaded, path))
+                    db.hasPodcast(podcastId) -> {
+                        getPodcastAwait(podcastId)
+                        db.updateDownloaded(EpisodePersistedDownloaded(episodeId,downloadId, path))
                     }
                     else -> {
-                        subscribePodcastAwait(episode.podcastId)
-                        db.updateDownloaded(EpisodePersistedDownloaded(episode.id,downloaded, path))
+                        subscribePodcastAwait(podcastId)
+                        db.updateDownloaded(EpisodePersistedDownloaded(episodeId,downloadId, path))
                     }
                 }
-                if (!downloaded) {
-                    deleteFile(episode.path)
+                if (downloadId == null) {
+                    deleteFile(path)
                 }
             } catch (e: Exception) {
                 updated.postValue(Result.Error(mapException(e)))
@@ -244,7 +244,7 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
             try {
                 val episodeResultApi = podcastIndexApi.getEpisodes(id).await()
                 val newEpisodes = episodeResultApi.episodes.filter { episodeRemote ->
-                    answer.episodes.map { episodePersisted ->
+                    !answer.episodes.map { episodePersisted ->
                         episodePersisted.id
                     }.contains(episodeRemote.id.toString())
                 }

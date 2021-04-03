@@ -22,19 +22,20 @@ data class EpisodePersisted(
     @ColumnInfo(name = "title") var title: String,
     @ColumnInfo(name = "description") var description: String,
     @ColumnInfo(name = "audioUrl") var audioUrl: String,
+    @ColumnInfo(name = "audioType") var audioType: String,
     @ColumnInfo(name = "imageUrl") var imageUrl: String,
     @ColumnInfo(name = "datePublished") var datePublished: Long,
     @ColumnInfo(name = "duration") var duration: Int,
     @ColumnInfo(name = "episode") var episode: Int,
     @ColumnInfo(name = "season") var season: Int,
-    @ColumnInfo(name = "downloaded") var downloaded: Boolean = false,
+    @ColumnInfo(name = "downloadId") var downloadId: Long? = null,
     @ColumnInfo(name = "path") var path: String = ""
 )
 
 @Entity
 data class EpisodePersistedDownloaded(
     @ColumnInfo(name = "id") var id: String,
-    @ColumnInfo(name = "downloaded") var downloaded: Boolean = false,
+    @ColumnInfo(name = "downloadId")  var downloadId: Long? = null,
     @ColumnInfo(name = "path") var path: String = ""
 )
 
@@ -44,12 +45,13 @@ fun Episode.Companion.toEpisode(episodePersisted: EpisodePersisted) = Episode(
     title = episodePersisted.title,
     description = episodePersisted.description,
     audioUrl = episodePersisted.audioUrl,
+    audioType = episodePersisted.audioType,
     imageUrl = episodePersisted.imageUrl,
     datePublished = episodePersisted.datePublished,
     duration = episodePersisted.duration,
     episode = episodePersisted.episode,
     season = episodePersisted.season,
-    downloaded = episodePersisted.downloaded,
+    downloadId = episodePersisted.downloadId,
     path = episodePersisted.path
 )
 
@@ -59,11 +61,12 @@ fun Episode.Companion.fromEpisode(episode: Episode) = EpisodePersisted(
     title = episode.title,
     description = episode.description,
     audioUrl = episode.audioUrl,
+    audioType = episode.audioType,
     imageUrl = episode.imageUrl,
     datePublished = episode.datePublished,
     duration = episode.duration,
     episode = episode.episode,
     season = episode.season,
-    downloaded = episode.downloaded,
+    downloadId = episode.downloadId,
     path = episode.path
 )

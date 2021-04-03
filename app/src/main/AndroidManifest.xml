@@ -3,6 +3,8 @@
     package="br.ufpe.cin.vrvs.podcastplayer">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <application
         android:name=".app.PodcastPlayerApplication"
         android:allowBackup="true"
