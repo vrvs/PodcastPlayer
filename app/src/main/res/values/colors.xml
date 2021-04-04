@@ -10,6 +10,7 @@
     <color name="dark">#191414</color>
     <color name="green">#008000</color>
     <color name="red">#FF0000</color>
+    <color name="transparent">#00FFFFFF</color>
     <color name="dark_transparent">#80191414</color>
     <color name="grey">#C2C2C2</color>
     <color name="grey_disabled">#656565</color>

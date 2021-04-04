@@ -13,7 +13,8 @@ data class Episode(
     var episode: Int,
     var season: Int,
     var downloadId: Long? = null,
-    var path: String = ""
+    var path: String = "",
+    var playing: Boolean = false
 ) {
     companion object
 }

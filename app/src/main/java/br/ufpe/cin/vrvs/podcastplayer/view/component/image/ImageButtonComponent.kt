@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import br.ufpe.cin.vrvs.podcastplayer.R
+import br.ufpe.cin.vrvs.podcastplayer.utils.Utils
 
 class ImageButtonComponent @JvmOverloads constructor(
     context: Context,
@@ -42,16 +43,13 @@ class ImageButtonComponent @JvmOverloads constructor(
                 Type.NONE -> R.drawable.ic_circle_white_24dp
             }
         )
-        DrawableCompat.setTint(
-            DrawableCompat.wrap(drawable),
-            ResourcesCompat.getColor(
-                resources,
-                if (isEnabled && state != Type.NONE)
-                    R.color.white
-                else
-                    R.color.grey_disabled,
-                null
-            )
+        Utils.setTint(
+            resources,
+            drawable,
+            if (isEnabled && state != Type.NONE)
+                R.color.white
+            else
+                R.color.grey_disabled
         )
     }
 

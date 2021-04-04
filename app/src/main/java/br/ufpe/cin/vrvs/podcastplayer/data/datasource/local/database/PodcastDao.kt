@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Update
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.table.EpisodePersisted
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.table.EpisodePersistedDownloaded
+import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.table.EpisodePersistedPlaying
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.table.PodcastPersisted
 
 @Dao
@@ -50,4 +51,7 @@ interface PodcastDao {
 
     @Update(entity = EpisodePersisted::class)
     suspend fun updateDownloaded(downloaded: EpisodePersistedDownloaded)
+
+    @Update(entity = EpisodePersisted::class)
+    suspend fun updatePlaying(downloaded: EpisodePersistedPlaying)
 }

@@ -3,6 +3,7 @@ package br.ufpe.cin.vrvs.podcastplayer.view.component.image
 import android.content.Context
 import android.util.AttributeSet
 import br.ufpe.cin.vrvs.podcastplayer.R
+import br.ufpe.cin.vrvs.podcastplayer.utils.Utils
 import com.squareup.picasso.Picasso
 
 class ImageComponent @JvmOverloads constructor(
@@ -12,7 +13,7 @@ class ImageComponent @JvmOverloads constructor(
 ): androidx.appcompat.widget.AppCompatImageView(context, attrs, defStyleAttr) {
 
     fun render(url: String) {
-        process(url).let {
+        Utils.processUrl(url).let {
             if (it.isNotEmpty()) {
                 Picasso
                     .get()
@@ -26,11 +27,5 @@ class ImageComponent @JvmOverloads constructor(
                     .into(this)
             }
         }
-    }
-
-    private fun process(url: String): String {
-        if ("https" in url)
-            return url
-        return url.replace("http", "https")
     }
 }

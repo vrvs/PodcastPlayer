@@ -10,8 +10,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import br.ufpe.cin.vrvs.podcastplayer.R
 import br.ufpe.cin.vrvs.podcastplayer.data.model.Episode
+import br.ufpe.cin.vrvs.podcastplayer.services.download.DownloadUtils.getDuration
 import br.ufpe.cin.vrvs.podcastplayer.services.download.DownloadUtils.isDownloaded
 import br.ufpe.cin.vrvs.podcastplayer.services.download.DownloadUtils.isInProgress
+import br.ufpe.cin.vrvs.podcastplayer.utils.Utils
 import br.ufpe.cin.vrvs.podcastplayer.view.component.image.ImageButtonComponent
 import br.ufpe.cin.vrvs.podcastplayer.view.component.image.SquareRoundedImageComponent
 
@@ -51,16 +53,16 @@ internal class EpisodeAdapter(val context: Context) : RecyclerView.Adapter<Episo
         val data = dataSet[position]
         viewHolder.apply {
             title.text = data.title
-            date.text = data.datePublished.toString()
+            date.text = Utils.toPrettyDate(data.datePublished)
             squareRoundedImageComponent.render(data.imageUrl)
             description.text = data.description
-            duration.text = "${data.duration} SEC"
 
             if (data.isDownloaded(context)) {
                 playPause.setOnClickListener {
                     _buttonClicked.postValue(Pair(data, playPause.state))
                     playPause.nextState()
                 }
+                duration.text = Utils.toPrettyDuration(data.getDuration(context))
                 downloadStopDelete.state = ImageButtonComponent.Type.DOWNLOADED
                 playPause.isEnabled = true
             } else {
@@ -71,7 +73,11 @@ internal class EpisodeAdapter(val context: Context) : RecyclerView.Adapter<Episo
                 }
                 playPause.isEnabled = false
             }
-            playPause.state = ImageButtonComponent.Type.PLAY
+            playPause.state = if (data.playing) {
+                ImageButtonComponent.Type.PAUSE
+            } else {
+                ImageButtonComponent.Type.PLAY
+            }
 
             downloadStopDelete.setOnClickListener {
                 _buttonClicked.postValue(Pair(data, downloadStopDelete.state))

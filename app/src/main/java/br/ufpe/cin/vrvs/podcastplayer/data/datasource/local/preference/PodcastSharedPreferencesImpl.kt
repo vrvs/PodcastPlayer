@@ -18,10 +18,10 @@ class PodcastSharedPreferencesImpl(context: Context) : PodcastSharedPreferences 
         sharedPreferences = context.getSharedPreferences(PODCAST_SHARED_PREFERENCES, MODE_PRIVATE)
     }
 
-    override var podcastId: String?
+    override var podcastEpisodeId: String?
         get() = sharedPreferences.getStringHelper(PODCAST_ID)
         set(newValue) = sharedPreferences.putStringHelper(PODCAST_ID, newValue)
-    override fun clearPodcastId() = sharedPreferences.clear(PODCAST_ID)
+    override fun clearPodcastEpisodeId() = sharedPreferences.clear(PODCAST_ID)
 
     override var podcastTime: Long?
         get() = sharedPreferences.getLongHelper(PODCAST_TIME)

@@ -29,7 +29,8 @@ data class EpisodePersisted(
     @ColumnInfo(name = "episode") var episode: Int,
     @ColumnInfo(name = "season") var season: Int,
     @ColumnInfo(name = "downloadId") var downloadId: Long? = null,
-    @ColumnInfo(name = "path") var path: String = ""
+    @ColumnInfo(name = "path") var path: String = "",
+    @ColumnInfo(name = "playing") var playing: Boolean = false
 )
 
 @Entity
@@ -37,6 +38,12 @@ data class EpisodePersistedDownloaded(
     @ColumnInfo(name = "id") var id: String,
     @ColumnInfo(name = "downloadId")  var downloadId: Long? = null,
     @ColumnInfo(name = "path") var path: String = ""
+)
+
+@Entity
+data class EpisodePersistedPlaying(
+    @ColumnInfo(name = "id") var id: String,
+    @ColumnInfo(name = "playing") var playing: Boolean = false
 )
 
 fun Episode.Companion.toEpisode(episodePersisted: EpisodePersisted) = Episode(
@@ -52,7 +59,8 @@ fun Episode.Companion.toEpisode(episodePersisted: EpisodePersisted) = Episode(
     episode = episodePersisted.episode,
     season = episodePersisted.season,
     downloadId = episodePersisted.downloadId,
-    path = episodePersisted.path
+    path = episodePersisted.path,
+    playing = episodePersisted.playing
 )
 
 fun Episode.Companion.fromEpisode(episode: Episode) = EpisodePersisted(
@@ -68,5 +76,6 @@ fun Episode.Companion.fromEpisode(episode: Episode) = EpisodePersisted(
     episode = episode.episode,
     season = episode.season,
     downloadId = episode.downloadId,
-    path = episode.path
+    path = episode.path,
+    playing = episode.playing
 )

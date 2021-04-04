@@ -42,4 +42,11 @@
             android:name="id"
             app:argType="string" />
     </fragment>
+    <action
+        android:id="@+id/action_global_podcastDetailsFragment"
+        app:destination="@id/podcastDetailsFragment"
+        app:enterAnim="@anim/fragment_close_enter"
+        app:exitAnim="@anim/fragment_close_exit"
+        app:popEnterAnim="@anim/fragment_open_enter"
+        app:popExitAnim="@anim/fragment_open_exit" />
 </navigation>

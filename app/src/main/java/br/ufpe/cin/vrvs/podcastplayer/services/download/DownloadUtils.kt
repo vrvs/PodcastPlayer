@@ -11,6 +11,7 @@ import android.content.Context
 import android.content.Context.DOWNLOAD_SERVICE
 import android.content.Intent
 import android.database.Cursor
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Environment.DIRECTORY_PODCASTS
 import android.webkit.MimeTypeMap
@@ -18,10 +19,11 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import br.ufpe.cin.vrvs.podcastplayer.data.model.Episode
 import br.ufpe.cin.vrvs.podcastplayer.data.repository.PodcastRepository
-import br.ufpe.cin.vrvs.podcastplayer.services.download.DownloadUtils.isInProgress
+import br.ufpe.cin.vrvs.podcastplayer.utils.Utils
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.io.File
+
 
 object DownloadUtils: KoinComponent {
 
@@ -41,10 +43,10 @@ object DownloadUtils: KoinComponent {
         episodeTitle: String,
         episodeId: String,
         podcastId: String): Long? {
-        val fileName = getEpisodeFileName(episodeTitle, episodeId, audioType)
+        val fileName = getEpisodeFileName(episodeId, audioType)
         val file = this.getPodcastFile(fileName)
         Toast.makeText(this, file.canonicalPath, LENGTH_LONG).show()
-        val request = getDownloadRequest(url, file, episodeTitle)
+        val request = getDownloadRequest(Utils.processUrl(url), file, episodeTitle)
         val result = this.enqueueDownload(request)
         savePathDownload(podcastId, episodeId, result, file.canonicalPath)
         return result
@@ -81,6 +83,14 @@ object DownloadUtils: KoinComponent {
             }
         }
         return false
+    }
+
+    fun Episode.getDuration(context: Context): Long {
+        val uri = Uri.parse(this.path)
+        val mmr = MediaMetadataRetriever()
+        mmr.setDataSource(context, uri)
+        val durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+        return durationStr?.toLong() ?: 0
     }
 
     private fun DownloadManager.isDownloadSucceed(downloadId: Long, episodeId: String, podcastId: String): Boolean {
@@ -120,8 +130,8 @@ object DownloadUtils: KoinComponent {
             .setAllowedOverMetered(true)
             .setAllowedOverRoaming(true)
 
-    private fun getEpisodeFileName(episodeTitle: String, episodeId: String, audioType: String): String =
-        "Episode $episodeId - $episodeTitle.${MimeTypeMap.getSingleton().getExtensionFromMimeType(audioType).orEmpty().ifBlank {audioType.replace('/', '.')}}"
+    private fun getEpisodeFileName(episodeId: String, audioType: String): String =
+        "Episode $episodeId.${MimeTypeMap.getSingleton().getExtensionFromMimeType(audioType).orEmpty().ifBlank {audioType.replace('/', '.')}}"
 
     private fun Context.enqueueDownload(request: DownloadManager.Request): Long? {
         val downloadManager = this.getDownloadManager()

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.PodcastDatabase
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.table.EpisodePersistedDownloaded
+import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.table.EpisodePersistedPlaying
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.table.fromEpisode
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.table.fromPodcast
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.table.toEpisode
@@ -42,7 +43,7 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
         scope.launch(playedContext) {
             podcastPlayedSong.postValue(Result.Loading)
             try {
-                val pair = Pair(podcastSharedPreferences.podcastId, podcastSharedPreferences.podcastTime)
+                val pair = Pair(podcastSharedPreferences.podcastEpisodeId, podcastSharedPreferences.podcastTime)
                 podcastPlayedSong.postValue(Result.Success(pair))
             } catch (e: Exception) {
                 podcastPlayedSong.postValue(Result.Error(mapException(e)))
@@ -53,14 +54,20 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
 
     override fun updatePlayedPodcast(id: String, time: Long) {
         scope.launch(playedContext) {
-            podcastSharedPreferences.podcastId = id
+            podcastSharedPreferences.podcastEpisodeId = id
             podcastSharedPreferences.podcastTime = time
+        }
+    }
+
+    override fun updatePlayingPodcast(id: String, playing: Boolean) {
+        scope.launch(playedContext) {
+            podcastDatabase.podcastDao().updatePlaying(EpisodePersistedPlaying(id, playing))
         }
     }
 
     override fun clearPlayedPodcast() {
         scope.launch(playedContext) {
-            podcastSharedPreferences.clearPodcastId()
+            podcastSharedPreferences.clearPodcastEpisodeId()
             podcastSharedPreferences.clearPodcastTime()
         }
     }

@@ -1,8 +1,8 @@
 package br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.preference
 
 interface PodcastSharedPreferences {
-    var podcastId: String?
-    fun clearPodcastId()
+    var podcastEpisodeId: String?
+    fun clearPodcastEpisodeId()
     var podcastTime: Long?
     fun clearPodcastTime()
 }

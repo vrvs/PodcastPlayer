@@ -8,6 +8,7 @@ import br.ufpe.cin.vrvs.podcastplayer.data.model.Result
 interface PodcastRepository {
     fun getPlayedPodcast() : LiveData<Result<Pair<String?, Long?>>>
     fun updatePlayedPodcast(id: String, time: Long)
+    fun updatePlayingPodcast(id: String, playing: Boolean)
     fun clearPlayedPodcast()
     fun getPodcastFeed() : LiveData<Result<List<Podcast>>>
     fun searchPodcast(query: String) : LiveData<Result<List<Podcast>>>

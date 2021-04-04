@@ -42,7 +42,6 @@ class PodcastSearchFragment : Fragment(R.layout.fragment_podcast_search) {
             lifecycleOwner = viewLifecycleOwner
         }
 
-
         spViewModel.podcasts.observe(viewLifecycleOwner, Observer {
             list.changeDataSet(it)
         })
@@ -71,13 +70,22 @@ class PodcastSearchFragment : Fragment(R.layout.fragment_podcast_search) {
                 }
             }
         })
-
-        spViewModel.getPodcastsFeed()
     }
 
     private fun hideKeyboard(view: View) {
         val inputMethodManager: InputMethodManager? = context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager?
         inputMethodManager?.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        searchText.text.let {
+            if (it.isNullOrBlank()) {
+                spViewModel.getPodcastsFeed()
+            } else {
+                spViewModel.searchPodcasts(it.toString())
+            }
+        }
     }
 
     override fun onDestroy() {

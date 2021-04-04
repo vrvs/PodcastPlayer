@@ -47,7 +47,7 @@ class EpisodeListComponent @JvmOverloads constructor(
     }
 
     fun changeDataSet(dataSet: List<Episode>) {
-        (list.adapter as EpisodeAdapter).dataSet = dataSet
+        (list.adapter as EpisodeAdapter).dataSet =  dataSet
     }
 
     override fun onVisibilityChanged(

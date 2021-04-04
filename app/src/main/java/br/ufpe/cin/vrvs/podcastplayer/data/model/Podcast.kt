@@ -11,4 +11,6 @@ data class Podcast(
     var episodes: List<Episode> = emptyList()
 ) {
     companion object
+
+    fun getEpisodesSorted(): List<Episode> = episodes.sortedByDescending { episode -> episode.datePublished }
 }
