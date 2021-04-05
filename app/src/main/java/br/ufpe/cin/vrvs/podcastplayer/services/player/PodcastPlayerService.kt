@@ -35,7 +35,6 @@ import br.ufpe.cin.vrvs.podcastplayer.data.model.Episode
 import br.ufpe.cin.vrvs.podcastplayer.data.model.Result
 import br.ufpe.cin.vrvs.podcastplayer.data.repository.PodcastRepository
 import br.ufpe.cin.vrvs.podcastplayer.utils.Utils
-import br.ufpe.cin.vrvs.podcastplayer.view.component.image.ImageButtonComponent
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
 import kotlinx.coroutines.Dispatchers

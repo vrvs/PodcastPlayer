@@ -14,6 +14,5 @@ ext.versions = [
     okhttp              : '4.9.0',
     picasso             : '2.8',
     retrofit            : '2.9.0',
-    room                : '2.2.6',
-    tikxml              : '0.8.13'
+    room                : '2.2.6'
 ]

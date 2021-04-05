@@ -15,8 +15,6 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Environment.DIRECTORY_PODCASTS
 import android.webkit.MimeTypeMap
-import android.widget.Toast
-import android.widget.Toast.LENGTH_LONG
 import br.ufpe.cin.vrvs.podcastplayer.data.model.Episode
 import br.ufpe.cin.vrvs.podcastplayer.data.repository.PodcastRepository
 import br.ufpe.cin.vrvs.podcastplayer.utils.Utils
@@ -45,7 +43,6 @@ object DownloadUtils: KoinComponent {
         podcastId: String): Long? {
         val fileName = getEpisodeFileName(episodeId, audioType)
         val file = this.getPodcastFile(fileName)
-        Toast.makeText(this, file.canonicalPath, LENGTH_LONG).show()
         val request = getDownloadRequest(Utils.processUrl(url), file, episodeTitle)
         val result = this.enqueueDownload(request)
         savePathDownload(podcastId, episodeId, result, file.canonicalPath)

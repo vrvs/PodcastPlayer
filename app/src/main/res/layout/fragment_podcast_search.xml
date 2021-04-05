@@ -77,6 +77,8 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/podcast_search_hint"
                 app:endIconMode="clear_text"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp"
                 app:startIconDrawable="@drawable/ic_search_grey_24dp">
 
                 <com.google.android.material.textfield.TextInputEditText

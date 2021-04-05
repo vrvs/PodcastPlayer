@@ -1,10 +1,12 @@
 package br.ufpe.cin.vrvs.podcastplayer.view.component.podcast.adapter
 
 import android.content.Context
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -55,9 +57,17 @@ internal class PodcastAdapter(val context: Context) : RecyclerView.Adapter<Podca
                 val chip = Chip(context)
                 chip.apply {
                     text = category
-                    setTextAppearance(R.style.ChipTextStyle)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        setTextAppearance(R.style.ChipTextStyle)
+                    } else {
+                        setTextAppearance(context, R.style.ChipTextStyle)
+                    }
                     chipBackgroundColor = ResourcesCompat.getColorStateList(context.resources, R.color.black, null)
                 }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    (chip as AppCompatCheckBox).setTextAppearance(R.style.ChipTextStyle)
+                }
+                chip
             }.forEach {
                 chipGroup.addView(it)
             }
