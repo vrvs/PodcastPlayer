@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <import type="android.view.View"/>
-        <variable name="viewModel" type="br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcasts.subscribed.SubscribedPodcastsViewModel"/>
+        <variable name="viewModel"
+            type="br.ufpe.cin.vrvs.podcastplayer.ui.viewmodel.podcasts.subscribed.SubscribedPodcastsViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -11,7 +12,7 @@
         android:background="@color/dark"
         android:layout_height="match_parent">
 
-        <br.ufpe.cin.vrvs.podcastplayer.view.component.loading.LoadingComponent
+        <br.ufpe.cin.vrvs.podcastplayer.ui.view.component.loading.LoadingComponent
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:translationZ="90dp"
@@ -21,7 +22,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <br.ufpe.cin.vrvs.podcastplayer.view.component.error.ErrorComponent
+        <br.ufpe.cin.vrvs.podcastplayer.ui.view.component.error.ErrorComponent
             android:id="@+id/error_screen"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -57,7 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <br.ufpe.cin.vrvs.podcastplayer.view.component.podcast.PodcastListComponent
+                <br.ufpe.cin.vrvs.podcastplayer.ui.view.component.podcast.PodcastListComponent
                     android:visibility="@{!viewModel.podcasts.empty ? View.VISIBLE : View.GONE}"
                     android:id="@+id/subscribed_list"
                     android:layout_width="match_parent"

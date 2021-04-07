@@ -6,7 +6,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         <import type="androidx.core.content.res.ResourcesCompat"/>
         <import type="android.content.res.Resources.Theme"/>
         <import type="android.view.View"/>
-        <variable name="viewModel" type="br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcast.PodcastDetailsViewModel"/>
+        <variable name="viewModel" type="br.ufpe.cin.vrvs.podcastplayer.ui.viewmodel.podcast.PodcastDetailsViewModel"/>
 </data>
 
 <androidx.constraintlayout.widget.ConstraintLayout
@@ -14,7 +14,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
     android:background="@color/dark"
     android:layout_height="match_parent">
 
-        <br.ufpe.cin.vrvs.podcastplayer.view.component.loading.LoadingComponent
+        <br.ufpe.cin.vrvs.podcastplayer.ui.view.component.loading.LoadingComponent
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:translationZ="90dp"
@@ -24,7 +24,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <br.ufpe.cin.vrvs.podcastplayer.view.component.error.ErrorComponent
+        <br.ufpe.cin.vrvs.podcastplayer.ui.view.component.error.ErrorComponent
             android:id="@+id/error_screen"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -50,7 +50,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
 
-                                <br.ufpe.cin.vrvs.podcastplayer.view.component.image.ImageComponent
+                                <br.ufpe.cin.vrvs.podcastplayer.ui.view.component.image.ImageComponent
                                     android:id="@+id/image_cover"
                                     android:layout_width="match_parent"
                                     android:layout_height="200dp"
@@ -125,7 +125,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
                                     android:text="@string/episode_title"
                                     android:textSize="18sp" />
 
-                                <br.ufpe.cin.vrvs.podcastplayer.view.component.episode.EpisodeListComponent
+                                <br.ufpe.cin.vrvs.podcastplayer.ui.view.component.episode.EpisodeListComponent
                                     android:layout_marginTop="10dp"
                                     android:id="@+id/episodes_list"
                                     android:layout_width="match_parent"

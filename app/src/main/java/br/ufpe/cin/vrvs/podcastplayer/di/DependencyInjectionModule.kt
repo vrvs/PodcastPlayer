@@ -9,9 +9,9 @@ import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.Podcas
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.PodcastIndexAuthInterceptor
 import br.ufpe.cin.vrvs.podcastplayer.data.repository.PodcastRepository
 import br.ufpe.cin.vrvs.podcastplayer.data.repository.PodcastRepositoryImpl
-import br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcast.PodcastDetailsViewModel
-import br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcasts.search.SearchPodcastsViewModel
-import br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcasts.subscribed.SubscribedPodcastsViewModel
+import br.ufpe.cin.vrvs.podcastplayer.ui.viewmodel.podcast.PodcastDetailsViewModel
+import br.ufpe.cin.vrvs.podcastplayer.ui.viewmodel.podcasts.search.SearchPodcastsViewModel
+import br.ufpe.cin.vrvs.podcastplayer.ui.viewmodel.podcasts.subscribed.SubscribedPodcastsViewModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.viewmodel.dsl.viewModel
