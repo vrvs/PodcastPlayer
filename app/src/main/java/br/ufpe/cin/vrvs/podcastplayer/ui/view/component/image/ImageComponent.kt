@@ -34,7 +34,7 @@ class ImageComponent @JvmOverloads constructor(
         loadUrl()
     }
 
-    fun loadUrl() = safeLet(widthView, heightView, url) { w, h, u ->
+    private fun loadUrl() = safeLet(widthView, heightView, url) { w, h, u ->
         Utils.processUrl(u).let {
             if (it.isNotEmpty()) {
                 Picasso

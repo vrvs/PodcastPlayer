@@ -12,12 +12,15 @@ import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import br.ufpe.cin.vrvs.podcastplayer.R
-import br.ufpe.cin.vrvs.podcastplayer.databinding.FragmentPodcastDetailsBinding
+import br.ufpe.cin.vrvs.podcastplayer.data.model.Podcast
 import br.ufpe.cin.vrvs.podcastplayer.services.download.DownloadUtils.startPodcastDownload
 import br.ufpe.cin.vrvs.podcastplayer.services.download.DownloadUtils.cancel
 import br.ufpe.cin.vrvs.podcastplayer.services.download.DownloadUtils.getDownloadCompleteBroadcastReceiver
@@ -26,6 +29,7 @@ import br.ufpe.cin.vrvs.podcastplayer.services.player.PodcastPlayerService
 import br.ufpe.cin.vrvs.podcastplayer.services.player.PodcastPlayerService.Companion.PAUSE_ACTION
 import br.ufpe.cin.vrvs.podcastplayer.services.player.PodcastPlayerService.Companion.PLAY_ACTION
 import br.ufpe.cin.vrvs.podcastplayer.services.player.PodcastPlayerService.PodcastPlayPauseListener
+import br.ufpe.cin.vrvs.podcastplayer.ui.contract.podcast.PodcastDetailsContract
 import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.episode.EpisodeListComponent
 import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.error.ErrorComponent
 import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.image.ImageButtonComponent.Type.DOWNLOAD
@@ -34,17 +38,23 @@ import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.image.ImageButtonCompone
 import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.image.ImageButtonComponent.Type.PLAY
 import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.image.ImageButtonComponent.Type.STOP
 import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.image.ImageComponent
-import br.ufpe.cin.vrvs.podcastplayer.ui.viewmodel.podcast.PodcastDetailsViewModel
-import org.koin.android.viewmodel.ext.android.viewModel
+import br.ufpe.cin.vrvs.podcastplayer.ui.presenter.podcast.PodcastDetailsPresenter
+import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.loading.LoadingComponent
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details) {
+class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details), PodcastDetailsContract.View {
 
-    private val pdViewModel: PodcastDetailsViewModel by viewModel()
+    override lateinit var presenter: PodcastDetailsContract.Presenter
     val args: PodcastDetailsFragmentArgs by navArgs()
-    private var mBinding: FragmentPodcastDetailsBinding? = null
+    private lateinit var root: LinearLayout
     private lateinit var list: EpisodeListComponent
     private lateinit var error: ErrorComponent
+    private lateinit var loading: LoadingComponent
     private lateinit var imageComponent: ImageComponent
+    private lateinit var subscribeButton: FloatingActionButton
+    private lateinit var title: TextView
+    private lateinit var author: TextView
+    private lateinit var description: TextView
     private var downloadManager: DownloadManager? = null
     private val broadcastReceiversMaps = mutableMapOf<Long, BroadcastReceiver>()
 
@@ -68,7 +78,7 @@ class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details) {
             override fun playPausePressed(podcastId: String?) {
                 podcastId?.let {
                     if (it == args.id) {
-                        pdViewModel.updatePodcast(it)
+                        presenter.updatePodcast(it)
                     }
                 }
             }
@@ -91,28 +101,24 @@ class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details) {
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
+        root = view.findViewById(R.id.root)
         imageComponent = view.findViewById(R.id.image_cover)
         list = view.findViewById(R.id.episodes_list)
         error = view.findViewById(R.id.error_screen)
+        loading = view.findViewById(R.id.loading_screen)
+        subscribeButton = view.findViewById(R.id.subscribe_button)
+        title = view.findViewById(R.id.title)
+        author = view.findViewById(R.id.author)
+        description = view.findViewById(R.id.description)
         downloadManager = context?.getDownloadManager()
 
-        FragmentPodcastDetailsBinding.bind(view).apply {
-            viewModel = pdViewModel
-            lifecycleOwner = viewLifecycleOwner
-        }
+        presenter = PodcastDetailsPresenter(this)
 
-        pdViewModel.podcast.observe(viewLifecycleOwner, Observer {
-            imageComponent.render(it.imageUrl)
-            list.changeDataSet(it.getEpisodesSorted())
-        })
         error.buttonClicked.observe(viewLifecycleOwner, Observer { button ->
             when (button) {
-                ErrorComponent.Button.TRY_AGAIN -> pdViewModel.getPodcast(args.id)
+                ErrorComponent.Button.TRY_AGAIN -> presenter.getPodcast(args.id)
                 ErrorComponent.Button.CLOSE -> findNavController().popBackStack()
             }
-        })
-        pdViewModel.error.observe(viewLifecycleOwner, Observer {
-            error.errorText(it)
         })
         list.buttonClicked.observe(viewLifecycleOwner, Observer {
             val episode = it.first
@@ -156,8 +162,6 @@ class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details) {
                 else -> {}
             }
         })
-
-        pdViewModel.getPodcast(args.id)
     }
 
     override fun onStart() {
@@ -167,6 +171,8 @@ class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details) {
             isBound = context?.bindService(bindIntent, sConn, Context.BIND_AUTO_CREATE) ?: false
         }
         podcastPlayerService?.loadListener(listener)
+        presenter.subscribe(context)
+        presenter.getPodcast(args.id)
     }
 
     override fun onStop() {
@@ -176,10 +182,10 @@ class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details) {
             isBound = false
         }
         podcastPlayerService?.loadListener(null)
+        presenter.unsubscribe()
     }
 
     override fun onDestroy() {
-        mBinding = null
         downloadManager = null
         broadcastReceiversMaps.values.forEach {
             context?.unregisterReceiver(it)
@@ -188,6 +194,44 @@ class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details) {
     }
 
     private fun updateInterface(id: String) {
-        pdViewModel.updatePodcast(id)
+        presenter.updatePodcast(id)
+    }
+
+    override fun showPodcast(podcast: Podcast) {
+        showView(showMain = true, showLoading = false, showError = false)
+        imageComponent.render(podcast.imageUrl)
+        subscribeButton.apply {
+            backgroundTintList = ResourcesCompat.getColorStateList(context.resources, if (podcast.subscribed) R.color.red else R.color.green,null)
+            setImageResource(if (podcast.subscribed) R.drawable.ic_remove_white_24dp else R.drawable.ic_add_white_24dp)
+            setOnClickListener {
+                if (podcast.subscribed)
+                    presenter.unsubscribePodcast(podcast.id)
+                else
+                    presenter.subscribePodcast(podcast.id)
+            }
+
+        }
+        title.text = podcast.title
+        author.text = podcast.author
+        description.text = podcast.description
+        list.changeDataSet(podcast.episodes)
+    }
+
+    override fun showError(error: String) {
+        showView(showMain = false, showLoading = false, showError = true)
+    }
+
+    override fun showLoading() {
+        showView(showMain = false, showLoading = true, showError = false)
+    }
+
+    private fun showView(showMain: Boolean, showLoading: Boolean, showError: Boolean) {
+        showView(root, showMain)
+        showView(loading, showLoading)
+        showView(error, showError)
+    }
+
+    private fun showView(view: View, showView: Boolean) {
+        view.visibility = if (showView) View.VISIBLE else View.GONE
     }
 }

@@ -43,7 +43,6 @@ dependencies {
     implementation "androidx.core:core-ktx:$versions.core_ktx"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$versions.lifecycle"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$versions.lifecycle"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycle"
     implementation "androidx.navigation:navigation-fragment-ktx:$versions.navigation"
     implementation "androidx.navigation:navigation-ui-ktx:$versions.navigation"
     implementation "androidx.room:room-ktx:$versions.room"
@@ -58,7 +57,6 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlin_coroutine"
     implementation "org.koin:koin-android:$versions.koin_android"
     implementation "org.koin:koin-android-ext:$versions.koin_android"
-    implementation "org.koin:koin-android-viewmodel:$versions.koin_android"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     kapt "androidx.room:room-compiler:$versions.room"
