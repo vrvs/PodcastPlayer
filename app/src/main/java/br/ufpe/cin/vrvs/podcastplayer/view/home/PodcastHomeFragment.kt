@@ -34,11 +34,10 @@ class PodcastHomeFragment : Fragment(R.layout.fragment_podcast_home) {
         error = view.findViewById(R.id.error_screen)
         searchButton = view.findViewById(R.id.floating_button)
 
-        FragmentPodcastHomeBinding.bind(view).apply {
+        mBinding = FragmentPodcastHomeBinding.bind(view).apply {
             viewModel = spViewModel
             lifecycleOwner = viewLifecycleOwner
         }
-
 
         spViewModel.podcasts.observe(viewLifecycleOwner, Observer {
             list.changeDataSet(it)
@@ -51,14 +50,19 @@ class PodcastHomeFragment : Fragment(R.layout.fragment_podcast_home) {
             val action = PodcastHomeFragmentDirections.actionPodcastHomeFragmentToPodcastDetailsFragment(it)
             findNavController().navigate(action)
         })
-        error.buttonClicked.observe(viewLifecycleOwner, Observer {
-            spViewModel.refreshSubscribedPodcast()
+        error.buttonClicked.observe(viewLifecycleOwner, Observer { button ->
+            when (button) {
+                ErrorComponent.Button.TRY_AGAIN -> spViewModel.refreshSubscribedPodcast()
+                ErrorComponent.Button.CLOSE -> error.visibility = View.GONE
+            }
+        })
+        spViewModel.error.observe(viewLifecycleOwner, Observer {
+            error.errorText(it)
         })
         searchButton.setOnClickListener {
             val action = PodcastHomeFragmentDirections.actionPodcastHomeFragmentToPodcastSearchFragment()
             findNavController().navigate(action)
         }
-
         spViewModel.refreshSubscribedPodcast()
     }
 

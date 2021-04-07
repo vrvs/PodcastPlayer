@@ -3,7 +3,8 @@ package br.ufpe.cin.vrvs.podcastplayer.view.component.error
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.widget.LinearLayout
+import android.widget.ImageButton
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,18 +15,27 @@ class ErrorComponent @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-): LinearLayout(context, attrs, defStyleAttr) {
+): RelativeLayout(context, attrs, defStyleAttr) {
+
+    enum class Button {
+        CLOSE,
+        TRY_AGAIN
+    }
 
     private val errorText: TextView by lazy { findViewById<TextView>(R.id.text_info) }
+    private val closeButton: ImageButton by lazy { findViewById<ImageButton>(R.id.close_button) }
     private val buttonError: MaterialButton by lazy { findViewById<MaterialButton>(R.id.button_error) }
 
-    private val _buttonClicked = MutableLiveData<Boolean>()
-    val buttonClicked: LiveData<Boolean> = _buttonClicked
+    private val _buttonClicked = MutableLiveData<Button>()
+    val buttonClicked: LiveData<Button> = _buttonClicked
 
     init {
         LayoutInflater.from(context).inflate(R.layout.error_component, this, true)
         buttonError.setOnClickListener {
-            _buttonClicked.postValue(true)
+            _buttonClicked.postValue(Button.TRY_AGAIN)
+        }
+        closeButton.setOnClickListener {
+            _buttonClicked.postValue(Button.CLOSE)
         }
     }
 

@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import br.ufpe.cin.vrvs.podcastplayer.R
 import br.ufpe.cin.vrvs.podcastplayer.databinding.FragmentPodcastDetailsBinding
@@ -95,7 +96,7 @@ class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details) {
         error = view.findViewById(R.id.error_screen)
         downloadManager = context?.getDownloadManager()
 
-        FragmentPodcastDetailsBinding.bind(view).apply {
+        mBinding = FragmentPodcastDetailsBinding.bind(view).apply {
             viewModel = pdViewModel
             lifecycleOwner = viewLifecycleOwner
         }
@@ -104,8 +105,14 @@ class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details) {
             imageComponent.render(it.imageUrl)
             list.changeDataSet(it.getEpisodesSorted())
         })
-        error.buttonClicked.observe(viewLifecycleOwner, Observer {
-            pdViewModel.getPodcast(args.id)
+        error.buttonClicked.observe(viewLifecycleOwner, Observer { button ->
+            when (button) {
+                ErrorComponent.Button.TRY_AGAIN -> pdViewModel.getPodcast(args.id)
+                ErrorComponent.Button.CLOSE -> findNavController().popBackStack()
+            }
+        })
+        pdViewModel.error.observe(viewLifecycleOwner, Observer {
+            error.errorText(it)
         })
         list.buttonClicked.observe(viewLifecycleOwner, Observer {
             val episode = it.first
@@ -146,9 +153,7 @@ class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details) {
                     }
                     updateInterface(episode.podcastId)
                 }
-                else -> {
-
-                }
+                else -> {}
             }
         })
 

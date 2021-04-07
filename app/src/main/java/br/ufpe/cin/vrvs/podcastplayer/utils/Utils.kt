@@ -1,11 +1,14 @@
 package br.ufpe.cin.vrvs.podcastplayer.utils
 
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.icu.util.TimeUnit
 import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import br.ufpe.cin.vrvs.podcastplayer.data.model.ErrorModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -50,6 +53,12 @@ object Utils {
                 "$s s"
             }
         }
+    }
 
+    fun getString(context: Context, errorModel: ErrorModel) =
+        errorModel.description ?: context.getString(errorModel.descriptionRes)
+
+    inline fun <T1: Any, T2: Any, T3: Any, R: Any> safeLet(p1: T1?, p2: T2?, p3: T3?, block: (T1, T2, T3)->R?): R? {
+        return if (p1 != null && p2 != null && p3 != null) block(p1, p2, p3) else null
     }
 }

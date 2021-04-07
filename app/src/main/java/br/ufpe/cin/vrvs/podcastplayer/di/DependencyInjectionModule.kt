@@ -60,13 +60,13 @@ val repositoryModule = module {
 @OptIn(KoinApiExtension::class)
 val viewModelModule = module {
     viewModel {
-        SubscribedPodcastsViewModel()
+        SubscribedPodcastsViewModel(get())
     }
     viewModel {
-        SearchPodcastsViewModel()
+        SearchPodcastsViewModel(get())
     }
     viewModel {
-        PodcastDetailsViewModel()
+        PodcastDetailsViewModel(get())
     }
 }
 

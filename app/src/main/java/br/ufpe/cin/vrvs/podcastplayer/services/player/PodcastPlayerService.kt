@@ -283,7 +283,9 @@ class PodcastPlayerService : LifecycleService() {
                 if (urlProcessed.isNotEmpty()) {
                     Picasso
                         .get()
-                        .load(urlProcessed).into(
+                        .load(urlProcessed)
+                        .resize(400, 400)
+                        .into(
                             object: Target {
                                 override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
                                 override fun onBitmapFailed(
@@ -295,6 +297,7 @@ class PodcastPlayerService : LifecycleService() {
                                     from: Picasso.LoadedFrom?
                                 ) {
                                     this@PodcastPlayerService.bitmap = bitmap
+                                    setNotification(!mPlayer.isPlaying)
                                 }
                             }
                         )

@@ -3,6 +3,7 @@ package br.ufpe.cin.vrvs.podcastplayer.view.search
 import android.app.Activity
 import android.os.Bundle
 import android.view.View
+import android.view.View.GONE
 import android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -37,7 +38,7 @@ class PodcastSearchFragment : Fragment(R.layout.fragment_podcast_search) {
         searchText = view.findViewById(R.id.search_text)
         error = view.findViewById(R.id.error_screen)
 
-        FragmentPodcastSearchBinding.bind(view).apply {
+        mBinding = FragmentPodcastSearchBinding.bind(view).apply {
             viewModel = spViewModel
             lifecycleOwner = viewLifecycleOwner
         }
@@ -53,22 +54,22 @@ class PodcastSearchFragment : Fragment(R.layout.fragment_podcast_search) {
         searchText.setOnEditorActionListener { v, actionId, _ ->
             hideKeyboard(v)
             searchText.clearFocus()
-            if (actionId == IME_ACTION_SEARCH && !v.text.isNullOrBlank()) {
+            if (actionId == IME_ACTION_SEARCH) {
                 spViewModel.searchPodcasts(v.text.toString())
                 true
-            } else {
-                Toast.makeText(context, R.string.podcast_search_empty_search_not_allowed, LENGTH_SHORT).show()
-                false
             }
+            false
         }
-        error.buttonClicked.observe(viewLifecycleOwner, Observer {
-            searchText.text.let {
-                if (it.isNullOrBlank()) {
-                    spViewModel.getPodcastsFeed()
-                } else {
+        error.buttonClicked.observe(viewLifecycleOwner, Observer { button ->
+            when (button) {
+                ErrorComponent.Button.TRY_AGAIN -> searchText.text?.let {
                     spViewModel.searchPodcasts(it.toString())
                 }
+                ErrorComponent.Button.CLOSE -> error.visibility = GONE
             }
+        })
+        spViewModel.error.observe(viewLifecycleOwner, Observer {
+            error.errorText(it)
         })
     }
 
