@@ -17,8 +17,11 @@
     <string name="podcast_search_title_first">PODCAST</string>
     <string name="podcast_search_title_second">SEARCH</string>
     <string name="podcast_search_hint">Search</string>
-    <string name="podcast_search_empty_search_not_allowed">Empty query not allowed. Type something.</string>
 
     <!-- Podcast Details Screen -->
     <string name="episode_title">Episodes</string>
+
+    <!-- Error Messages -->
+    <string name="connection_error">Oops! Something went wrong! Please, check your internet connection and try
+        again.</string>
 </resources>

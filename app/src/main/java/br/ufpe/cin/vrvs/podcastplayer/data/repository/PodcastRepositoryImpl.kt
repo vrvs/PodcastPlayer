@@ -2,6 +2,7 @@ package br.ufpe.cin.vrvs.podcastplayer.data.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import br.ufpe.cin.vrvs.podcastplayer.R
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.PodcastDatabase
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.table.EpisodePersistedDownloaded
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.table.EpisodePersistedPlaying
@@ -11,11 +12,14 @@ import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.table.toEpi
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.database.table.toPodcast
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.local.preference.PodcastSharedPreferences
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.PodcastIndexApi
+import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.response.ApiErrorResponse
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.response.toEpisode
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.response.toPodcast
 import br.ufpe.cin.vrvs.podcastplayer.data.model.Episode
+import br.ufpe.cin.vrvs.podcastplayer.data.model.ErrorModel
 import br.ufpe.cin.vrvs.podcastplayer.data.model.Podcast
 import br.ufpe.cin.vrvs.podcastplayer.data.model.Result
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
@@ -24,8 +28,12 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import retrofit2.HttpException
 import retrofit2.await
 import java.io.File
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.util.concurrent.Executors
 
 @KoinApiExtension
@@ -293,8 +301,18 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
         return answer
     }
     
-    private fun mapException(e: Exception): Exception {
-        // TODO: map exceptions
-        return e
+    private fun mapException(e: Exception): ErrorModel {
+        when (e) {
+            is HttpException -> {
+                e.response()?.errorBody()?.string()?.let {
+                    val ans = Gson().fromJson<ApiErrorResponse>(it, ApiErrorResponse::class.javaObjectType)
+                    return ErrorModel(ans.description)
+                }
+            }
+            is SocketTimeoutException, is ConnectException, is UnknownHostException-> {
+                return ErrorModel(descriptionRes = R.string.connection_error)
+            }
+        }
+        return ErrorModel()
     }
 }

@@ -39,7 +39,6 @@ class PodcastHomeFragment : Fragment(R.layout.fragment_podcast_home) {
             lifecycleOwner = viewLifecycleOwner
         }
 
-
         spViewModel.podcasts.observe(viewLifecycleOwner, Observer {
             list.changeDataSet(it)
         })
@@ -51,14 +50,19 @@ class PodcastHomeFragment : Fragment(R.layout.fragment_podcast_home) {
             val action = PodcastHomeFragmentDirections.actionPodcastHomeFragmentToPodcastDetailsFragment(it)
             findNavController().navigate(action)
         })
-        error.buttonClicked.observe(viewLifecycleOwner, Observer {
-            spViewModel.refreshSubscribedPodcast()
+        error.buttonClicked.observe(viewLifecycleOwner, Observer { button ->
+            when (button) {
+                ErrorComponent.Button.TRY_AGAIN -> spViewModel.refreshSubscribedPodcast()
+                ErrorComponent.Button.CLOSE -> error.visibility = View.GONE
+            }
+        })
+        spViewModel.error.observe(viewLifecycleOwner, Observer {
+            error.errorText(it)
         })
         searchButton.setOnClickListener {
             val action = PodcastHomeFragmentDirections.actionPodcastHomeFragmentToPodcastSearchFragment()
             findNavController().navigate(action)
         }
-
         spViewModel.refreshSubscribedPodcast()
     }
 
