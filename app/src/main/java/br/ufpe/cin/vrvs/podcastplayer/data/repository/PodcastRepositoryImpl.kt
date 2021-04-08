@@ -306,7 +306,7 @@ class PodcastRepositoryImpl : PodcastRepository, KoinComponent {
             is HttpException -> {
                 e.response()?.errorBody()?.string()?.let {
                     val ans = Gson().fromJson<ApiErrorResponse>(it, ApiErrorResponse::class.javaObjectType)
-                    return ErrorModel(ans.description)
+                    return ErrorModel(ans?.description)
                 }
             }
             is SocketTimeoutException, is ConnectException, is UnknownHostException-> {
