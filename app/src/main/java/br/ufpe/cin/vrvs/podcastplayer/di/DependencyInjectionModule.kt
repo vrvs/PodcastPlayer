@@ -9,9 +9,9 @@ import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.Podcas
 import br.ufpe.cin.vrvs.podcastplayer.data.datasource.remote.podcastindex.PodcastIndexAuthInterceptor
 import br.ufpe.cin.vrvs.podcastplayer.data.repository.PodcastRepository
 import br.ufpe.cin.vrvs.podcastplayer.data.repository.PodcastRepositoryImpl
-import br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcast.PodcastDetailsViewModel
-import br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcasts.search.SearchPodcastsViewModel
-import br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcasts.subscribed.SubscribedPodcastsViewModel
+import br.ufpe.cin.vrvs.podcastplayer.ui.viewmodel.podcast.PodcastDetailsViewModel
+import br.ufpe.cin.vrvs.podcastplayer.ui.viewmodel.search.PodcastSearchViewModel
+import br.ufpe.cin.vrvs.podcastplayer.ui.viewmodel.home.PodcastHomeViewModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.viewmodel.dsl.viewModel
@@ -60,10 +60,10 @@ val repositoryModule = module {
 @OptIn(KoinApiExtension::class)
 val viewModelModule = module {
     viewModel {
-        SubscribedPodcastsViewModel(get())
+        PodcastHomeViewModel(get())
     }
     viewModel {
-        SearchPodcastsViewModel(get())
+        PodcastSearchViewModel(get())
     }
     viewModel {
         PodcastDetailsViewModel(get())

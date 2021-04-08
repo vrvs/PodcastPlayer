@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <import type="android.view.View"/>
-        <variable name="viewModel" type="br.ufpe.cin.vrvs.podcastplayer.viewmodel.podcasts.search.SearchPodcastsViewModel"/>
+        <variable name="viewModel" type="br.ufpe.cin.vrvs.podcastplayer.ui.viewmodel.search.PodcastSearchViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -11,22 +11,22 @@
         android:background="@color/dark"
         android:layout_height="match_parent">
 
-        <br.ufpe.cin.vrvs.podcastplayer.view.component.loading.LoadingComponent
+        <br.ufpe.cin.vrvs.podcastplayer.ui.view.component.loading.LoadingComponent
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:translationZ="90dp"
-            android:visibility="@{viewModel.loading ? View.VISIBLE : View.GONE}"
+            android:visibility="@{viewModel.state.loading ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <br.ufpe.cin.vrvs.podcastplayer.view.component.error.ErrorComponent
+        <br.ufpe.cin.vrvs.podcastplayer.ui.view.component.error.ErrorComponent
             android:id="@+id/error_screen"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:translationZ="180dp"
-            android:visibility="@{viewModel.error.isEmpty() ? View.GONE : View.VISIBLE}"
+            android:visibility="@{viewModel.state.error == null ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -93,8 +93,8 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <br.ufpe.cin.vrvs.podcastplayer.view.component.podcast.PodcastListComponent
-                android:visibility="@{!viewModel.podcasts.empty ? View.VISIBLE : View.GONE}"
+            <br.ufpe.cin.vrvs.podcastplayer.ui.view.component.podcast.PodcastListComponent
+                android:visibility="@{viewModel.state.data != null ? View.VISIBLE : View.GONE}"
                 android:id="@+id/subscribed_list"
                 android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
