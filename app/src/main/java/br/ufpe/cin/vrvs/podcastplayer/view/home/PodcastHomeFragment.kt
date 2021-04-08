@@ -1,4 +1,4 @@
-package br.ufpe.cin.vrvs.podcastplayer.ui.view.home
+package br.ufpe.cin.vrvs.podcastplayer.view.home
 
 import android.os.Bundle
 import android.view.View
@@ -10,21 +10,31 @@ import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import br.ufpe.cin.vrvs.podcastplayer.R
 import br.ufpe.cin.vrvs.podcastplayer.data.model.Podcast
-import br.ufpe.cin.vrvs.podcastplayer.ui.contract.home.PodcastHomeContract
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.error.ErrorComponent
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.podcast.PodcastListComponent
-import br.ufpe.cin.vrvs.podcastplayer.ui.presenter.home.PodcastHomePresenter
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.loading.LoadingComponent
+import br.ufpe.cin.vrvs.podcastplayer.data.model.Result
+import br.ufpe.cin.vrvs.podcastplayer.data.repository.PodcastRepository
+import br.ufpe.cin.vrvs.podcastplayer.view.component.error.ErrorComponent
+import br.ufpe.cin.vrvs.podcastplayer.view.component.podcast.PodcastListComponent
+import br.ufpe.cin.vrvs.podcastplayer.view.component.loading.LoadingComponent
+import br.ufpe.cin.vrvs.podcastplayer.utils.Utils
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import org.koin.android.ext.android.inject
 
-class PodcastHomeFragment : Fragment(R.layout.fragment_podcast_home), PodcastHomeContract.View {
+class PodcastHomeFragment : Fragment(R.layout.fragment_podcast_home) {
 
-    override lateinit var presenter: PodcastHomeContract.Presenter
+    private val podcastRepository: PodcastRepository by inject()
     private lateinit var list: PodcastListComponent
     private lateinit var error: ErrorComponent
     private lateinit var loading: LoadingComponent
     private lateinit var refresh: SwipeRefreshLayout
     private lateinit var searchButton: FloatingActionButton
+
+    private val podcastObserver = Observer<Result<List<Podcast>>> {
+        when (it) {
+            is Result.Success -> showSubscribedPodcasts(it.data)
+            is Result.Loading -> showLoading()
+            is Result.Error -> context?. let { c -> showError(Utils.getString(c, it.error)) }
+        }
+    }
 
     override fun onViewCreated(
         view: View,
@@ -38,11 +48,9 @@ class PodcastHomeFragment : Fragment(R.layout.fragment_podcast_home), PodcastHom
         loading = view.findViewById(R.id.loading_screen)
         searchButton = view.findViewById(R.id.floating_button)
 
-        presenter = PodcastHomePresenter(this)
-
         refresh.setOnRefreshListener {
             refresh.isRefreshing = false
-            presenter.refreshSubscribedPodcasts()
+            podcastRepository.getSubscribedPodcast().observe(viewLifecycleOwner, podcastObserver)
         }
         list.itemClicked.observe(viewLifecycleOwner, Observer {
             val action = PodcastHomeFragmentDirections.actionPodcastHomeFragmentToPodcastDetailsFragment(it)
@@ -50,7 +58,7 @@ class PodcastHomeFragment : Fragment(R.layout.fragment_podcast_home), PodcastHom
         })
         error.buttonClicked.observe(viewLifecycleOwner, Observer { button ->
             when (button) {
-                ErrorComponent.Button.TRY_AGAIN -> presenter.refreshSubscribedPodcasts()
+                ErrorComponent.Button.TRY_AGAIN -> podcastRepository.getSubscribedPodcast().observe(viewLifecycleOwner, podcastObserver)
                 ErrorComponent.Button.CLOSE -> showView(showMain = true, showLoading = false, showError = false)
             }
         })
@@ -62,26 +70,20 @@ class PodcastHomeFragment : Fragment(R.layout.fragment_podcast_home), PodcastHom
 
     override fun onStart() {
         super.onStart()
-        presenter.subscribe(context)
-        presenter.refreshSubscribedPodcasts()
+        podcastRepository.getSubscribedPodcast().observe(viewLifecycleOwner, podcastObserver)
     }
 
-    override fun onStop() {
-        super.onStop()
-        presenter.unsubscribe()
-    }
-
-    override fun showSubscribedPodcasts(podcasts: List<Podcast>) {
+    private fun showSubscribedPodcasts(podcasts: List<Podcast>) {
         showView(showMain = true, showLoading = false, showError = false)
         list.changeDataSet(podcasts)
     }
 
-    override fun showError(error: String) {
+    private fun showError(error: String) {
         showView(showMain = false, showLoading = false, showError = true)
         this.error.errorText(error)
     }
 
-    override fun showLoading() {
+    private fun showLoading() {
         showView(showMain = false, showLoading = true, showError = false)
     }
 

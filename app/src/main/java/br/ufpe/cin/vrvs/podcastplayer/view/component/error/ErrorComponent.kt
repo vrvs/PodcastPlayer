@@ -1,4 +1,4 @@
-package br.ufpe.cin.vrvs.podcastplayer.ui.view.component.error
+package br.ufpe.cin.vrvs.podcastplayer.view.component.error
 
 import android.content.Context
 import android.util.AttributeSet

@@ -1,4 +1,4 @@
-package br.ufpe.cin.vrvs.podcastplayer.ui.view.podcast
+package br.ufpe.cin.vrvs.podcastplayer.view.podcast
 
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
@@ -21,6 +21,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import br.ufpe.cin.vrvs.podcastplayer.R
 import br.ufpe.cin.vrvs.podcastplayer.data.model.Podcast
+import br.ufpe.cin.vrvs.podcastplayer.data.model.Result
+import br.ufpe.cin.vrvs.podcastplayer.data.repository.PodcastRepository
 import br.ufpe.cin.vrvs.podcastplayer.services.download.DownloadUtils.startPodcastDownload
 import br.ufpe.cin.vrvs.podcastplayer.services.download.DownloadUtils.cancel
 import br.ufpe.cin.vrvs.podcastplayer.services.download.DownloadUtils.getDownloadCompleteBroadcastReceiver
@@ -29,22 +31,22 @@ import br.ufpe.cin.vrvs.podcastplayer.services.player.PodcastPlayerService
 import br.ufpe.cin.vrvs.podcastplayer.services.player.PodcastPlayerService.Companion.PAUSE_ACTION
 import br.ufpe.cin.vrvs.podcastplayer.services.player.PodcastPlayerService.Companion.PLAY_ACTION
 import br.ufpe.cin.vrvs.podcastplayer.services.player.PodcastPlayerService.PodcastPlayPauseListener
-import br.ufpe.cin.vrvs.podcastplayer.ui.contract.podcast.PodcastDetailsContract
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.episode.EpisodeListComponent
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.error.ErrorComponent
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.image.ImageButtonComponent.Type.DOWNLOAD
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.image.ImageButtonComponent.Type.DOWNLOADED
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.image.ImageButtonComponent.Type.PAUSE
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.image.ImageButtonComponent.Type.PLAY
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.image.ImageButtonComponent.Type.STOP
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.image.ImageComponent
-import br.ufpe.cin.vrvs.podcastplayer.ui.presenter.podcast.PodcastDetailsPresenter
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.loading.LoadingComponent
+import br.ufpe.cin.vrvs.podcastplayer.view.component.episode.EpisodeListComponent
+import br.ufpe.cin.vrvs.podcastplayer.view.component.error.ErrorComponent
+import br.ufpe.cin.vrvs.podcastplayer.view.component.image.ImageButtonComponent.Type.DOWNLOAD
+import br.ufpe.cin.vrvs.podcastplayer.view.component.image.ImageButtonComponent.Type.DOWNLOADED
+import br.ufpe.cin.vrvs.podcastplayer.view.component.image.ImageButtonComponent.Type.PAUSE
+import br.ufpe.cin.vrvs.podcastplayer.view.component.image.ImageButtonComponent.Type.PLAY
+import br.ufpe.cin.vrvs.podcastplayer.view.component.image.ImageButtonComponent.Type.STOP
+import br.ufpe.cin.vrvs.podcastplayer.view.component.image.ImageComponent
+import br.ufpe.cin.vrvs.podcastplayer.view.component.loading.LoadingComponent
+import br.ufpe.cin.vrvs.podcastplayer.utils.Utils
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import org.koin.android.ext.android.inject
 
-class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details), PodcastDetailsContract.View {
+class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details) {
 
-    override lateinit var presenter: PodcastDetailsContract.Presenter
+    private val podcastRepository: PodcastRepository by inject()
     val args: PodcastDetailsFragmentArgs by navArgs()
     private lateinit var root: LinearLayout
     private lateinit var list: EpisodeListComponent
@@ -78,10 +80,34 @@ class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details), Podc
             override fun playPausePressed(podcastId: String?) {
                 podcastId?.let {
                     if (it == args.id) {
-                        presenter.updatePodcast(it)
+                        podcastRepository.getPodcast(it).observe(viewLifecycleOwner, podcastUpdateObserver)
                     }
                 }
             }
+        }
+    }
+
+    private val podcastObserver = Observer<Result<Podcast>> {
+        when (it) {
+            is Result.Success -> showPodcast(it.data)
+            is Result.Loading -> showLoading()
+            is Result.Error -> context?. let { c -> showError(Utils.getString(c, it.error)) }
+        }
+    }
+
+    private val podcastUpdateObserver = Observer<Result<Podcast>> {
+        when (it) {
+            is Result.Success -> showPodcast(it.data)
+            is Result.Loading -> {}
+            is Result.Error -> context?. let { c -> showError(Utils.getString(c, it.error)) }
+        }
+    }
+
+    private val subsObserver = Observer<Result<String>> {
+        when (it) {
+            is Result.Success -> podcastRepository.getPodcast(it.data).observe(viewLifecycleOwner, podcastUpdateObserver)
+            is Result.Loading -> showLoading()
+            is Result.Error -> context?. let { c -> showError(Utils.getString(c, it.error)) }
         }
     }
 
@@ -112,11 +138,9 @@ class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details), Podc
         description = view.findViewById(R.id.description)
         downloadManager = context?.getDownloadManager()
 
-        presenter = PodcastDetailsPresenter(this)
-
         error.buttonClicked.observe(viewLifecycleOwner, Observer { button ->
             when (button) {
-                ErrorComponent.Button.TRY_AGAIN -> presenter.getPodcast(args.id)
+                ErrorComponent.Button.TRY_AGAIN -> podcastRepository.getPodcast(args.id).observe(viewLifecycleOwner, podcastObserver)
                 ErrorComponent.Button.CLOSE -> findNavController().popBackStack()
             }
         })
@@ -171,8 +195,7 @@ class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details), Podc
             isBound = context?.bindService(bindIntent, sConn, Context.BIND_AUTO_CREATE) ?: false
         }
         podcastPlayerService?.loadListener(listener)
-        presenter.subscribe(context)
-        presenter.getPodcast(args.id)
+        podcastRepository.getPodcast(args.id).observe(viewLifecycleOwner, podcastObserver)
     }
 
     override fun onStop() {
@@ -182,7 +205,6 @@ class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details), Podc
             isBound = false
         }
         podcastPlayerService?.loadListener(null)
-        presenter.unsubscribe()
     }
 
     override fun onDestroy() {
@@ -194,10 +216,10 @@ class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details), Podc
     }
 
     private fun updateInterface(id: String) {
-        presenter.updatePodcast(id)
+        podcastRepository.getPodcast(id).observe(viewLifecycleOwner, podcastUpdateObserver)
     }
 
-    override fun showPodcast(podcast: Podcast) {
+    private fun showPodcast(podcast: Podcast) {
         showView(showMain = true, showLoading = false, showError = false)
         imageComponent.render(podcast.imageUrl)
         subscribeButton.apply {
@@ -205,9 +227,9 @@ class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details), Podc
             setImageResource(if (podcast.subscribed) R.drawable.ic_remove_white_24dp else R.drawable.ic_add_white_24dp)
             setOnClickListener {
                 if (podcast.subscribed)
-                    presenter.unsubscribePodcast(podcast.id)
+                    podcastRepository.unsubscribePodcast(podcast.id).observe(viewLifecycleOwner, subsObserver)
                 else
-                    presenter.subscribePodcast(podcast.id)
+                    podcastRepository.subscribePodcast(podcast.id).observe(viewLifecycleOwner, subsObserver)
             }
 
         }
@@ -217,11 +239,11 @@ class PodcastDetailsFragment : Fragment(R.layout.fragment_podcast_details), Podc
         list.changeDataSet(podcast.episodes)
     }
 
-    override fun showError(error: String) {
+    private fun showError(error: String) {
         showView(showMain = false, showLoading = false, showError = true)
     }
 
-    override fun showLoading() {
+    private fun showLoading() {
         showView(showMain = false, showLoading = true, showError = false)
     }
 

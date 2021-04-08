@@ -1,4 +1,4 @@
-package br.ufpe.cin.vrvs.podcastplayer.ui.view.search
+package br.ufpe.cin.vrvs.podcastplayer.view.search
 
 import android.app.Activity
 import android.os.Bundle
@@ -11,21 +11,31 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import br.ufpe.cin.vrvs.podcastplayer.R
 import br.ufpe.cin.vrvs.podcastplayer.data.model.Podcast
-import br.ufpe.cin.vrvs.podcastplayer.ui.contract.search.PodcastSearchContract
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.error.ErrorComponent
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.podcast.PodcastListComponent
-import br.ufpe.cin.vrvs.podcastplayer.ui.presenter.search.PodcastSearchPresenter
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.loading.LoadingComponent
+import br.ufpe.cin.vrvs.podcastplayer.data.model.Result
+import br.ufpe.cin.vrvs.podcastplayer.data.repository.PodcastRepository
+import br.ufpe.cin.vrvs.podcastplayer.view.component.error.ErrorComponent
+import br.ufpe.cin.vrvs.podcastplayer.view.component.podcast.PodcastListComponent
+import br.ufpe.cin.vrvs.podcastplayer.view.component.loading.LoadingComponent
+import br.ufpe.cin.vrvs.podcastplayer.utils.Utils
 import com.google.android.material.textfield.TextInputEditText
+import org.koin.android.ext.android.inject
 
 
-class PodcastSearchFragment : Fragment(R.layout.fragment_podcast_search), PodcastSearchContract.View {
+class PodcastSearchFragment : Fragment(R.layout.fragment_podcast_search) {
 
-    override lateinit var presenter: PodcastSearchContract.Presenter
+    private val podcastRepository: PodcastRepository by inject()
     private lateinit var list: PodcastListComponent
     private lateinit var error: ErrorComponent
     private lateinit var loading: LoadingComponent
     private lateinit var searchText: TextInputEditText
+
+    private val podcastObserver = Observer<Result<List<Podcast>>> {
+        when (it) {
+            is Result.Success -> showPodcasts(it.data)
+            is Result.Loading -> showLoading()
+            is Result.Error -> context?. let { c -> showError(Utils.getString(c, it.error))  }
+        }
+    }
 
     override fun onViewCreated(
         view: View,
@@ -38,8 +48,6 @@ class PodcastSearchFragment : Fragment(R.layout.fragment_podcast_search), Podcas
         error = view.findViewById(R.id.error_screen)
         loading = view.findViewById(R.id.loading_screen)
 
-        presenter = PodcastSearchPresenter(this)
-
         list.itemClicked.observe(viewLifecycleOwner, Observer {
             val action = PodcastSearchFragmentDirections.actionPodcastSearchFragmentToPodcastDetailsFragment(it)
             findNavController().navigate(action)
@@ -48,7 +56,7 @@ class PodcastSearchFragment : Fragment(R.layout.fragment_podcast_search), Podcas
             hideKeyboard(v)
             searchText.clearFocus()
             if (actionId == IME_ACTION_SEARCH) {
-                presenter.searchPodcasts(v.text.toString())
+                podcastRepository.searchPodcast(v.text.toString()).observe(viewLifecycleOwner, podcastObserver)
                 true
             }
             false
@@ -56,7 +64,7 @@ class PodcastSearchFragment : Fragment(R.layout.fragment_podcast_search), Podcas
         error.buttonClicked.observe(viewLifecycleOwner, Observer { button ->
             when (button) {
                 ErrorComponent.Button.TRY_AGAIN -> searchText.text?.let {
-                    presenter.searchPodcasts(it.toString())
+                    podcastRepository.searchPodcast(it.toString()).observe(viewLifecycleOwner, podcastObserver)
                 }
                 ErrorComponent.Button.CLOSE -> error.visibility = GONE
             }
@@ -72,30 +80,24 @@ class PodcastSearchFragment : Fragment(R.layout.fragment_podcast_search), Podcas
         super.onStart()
         searchText.text.let {
             if (it.isNullOrBlank()) {
-                presenter.getPodcastFeed()
+                podcastRepository.getPodcastFeed().observe(viewLifecycleOwner, podcastObserver)
             } else {
-                presenter.searchPodcasts(it.toString())
+                podcastRepository.searchPodcast(it.toString()).observe(viewLifecycleOwner, podcastObserver)
             }
         }
-        presenter.subscribe(context)
     }
 
-    override fun onStop() {
-        super.onStop()
-        presenter.unsubscribe()
-    }
-
-    override fun showPodcasts(podcasts: List<Podcast>) {
+    private fun showPodcasts(podcasts: List<Podcast>) {
         showView(showMain = true, showLoading = false, showError = false)
         list.changeDataSet(podcasts)
     }
 
-    override fun showError(error: String) {
+    private fun showError(error: String) {
         showView(showMain = false, showLoading = false, showError = true)
         this.error.errorText(error)
     }
 
-    override fun showLoading() {
+    private fun showLoading() {
         showView(showMain = false, showLoading = true, showError = false)
     }
 

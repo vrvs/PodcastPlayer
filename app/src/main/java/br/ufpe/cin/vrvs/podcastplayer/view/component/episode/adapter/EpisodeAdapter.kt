@@ -1,4 +1,4 @@
-package br.ufpe.cin.vrvs.podcastplayer.ui.view.component.episode.adapter
+package br.ufpe.cin.vrvs.podcastplayer.view.component.episode.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -14,8 +14,8 @@ import br.ufpe.cin.vrvs.podcastplayer.services.download.DownloadUtils.getDuratio
 import br.ufpe.cin.vrvs.podcastplayer.services.download.DownloadUtils.isDownloaded
 import br.ufpe.cin.vrvs.podcastplayer.services.download.DownloadUtils.isInProgress
 import br.ufpe.cin.vrvs.podcastplayer.utils.Utils
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.image.ImageButtonComponent
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.image.SquareRoundedImageComponent
+import br.ufpe.cin.vrvs.podcastplayer.view.component.image.ImageButtonComponent
+import br.ufpe.cin.vrvs.podcastplayer.view.component.image.SquareRoundedImageComponent
 
 internal class EpisodeAdapter(val context: Context) : RecyclerView.Adapter<EpisodeAdapter.ViewHolder>() {
 

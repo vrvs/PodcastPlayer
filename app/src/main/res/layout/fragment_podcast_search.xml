@@ -5,7 +5,7 @@
     android:background="@color/dark"
     android:layout_height="match_parent">
 
-    <br.ufpe.cin.vrvs.podcastplayer.ui.view.component.loading.LoadingComponent
+    <br.ufpe.cin.vrvs.podcastplayer.view.component.loading.LoadingComponent
         android:id="@+id/loading_screen"
         android:visibility="gone"
         android:layout_width="0dp"
@@ -16,7 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <br.ufpe.cin.vrvs.podcastplayer.ui.view.component.error.ErrorComponent
+    <br.ufpe.cin.vrvs.podcastplayer.view.component.error.ErrorComponent
         android:id="@+id/error_screen"
         android:visibility="gone"
         android:layout_width="0dp"
@@ -88,7 +88,7 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <br.ufpe.cin.vrvs.podcastplayer.ui.view.component.podcast.PodcastListComponent
+        <br.ufpe.cin.vrvs.podcastplayer.view.component.podcast.PodcastListComponent
             android:id="@+id/subscribed_list"
             android:layout_marginTop="10dp"
             android:layout_width="match_parent"

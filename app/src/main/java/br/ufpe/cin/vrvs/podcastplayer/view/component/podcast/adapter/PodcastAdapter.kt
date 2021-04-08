@@ -1,4 +1,4 @@
-package br.ufpe.cin.vrvs.podcastplayer.ui.view.component.podcast.adapter
+package br.ufpe.cin.vrvs.podcastplayer.view.component.podcast.adapter
 
 import android.content.Context
 import android.os.Build
@@ -13,7 +13,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import br.ufpe.cin.vrvs.podcastplayer.R
 import br.ufpe.cin.vrvs.podcastplayer.data.model.Podcast
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.image.SquareRoundedImageComponent
+import br.ufpe.cin.vrvs.podcastplayer.view.component.image.SquareRoundedImageComponent
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 

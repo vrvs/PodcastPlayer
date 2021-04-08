@@ -9,7 +9,7 @@
         app:cardCornerRadius="10dp"
         android:layout_height="match_parent">
 
-        <br.ufpe.cin.vrvs.podcastplayer.ui.view.component.image.ImageComponent
+        <br.ufpe.cin.vrvs.podcastplayer.view.component.image.ImageComponent
             android:id="@+id/icon"
             android:layout_width="match_parent"
             android:background="@color/dark_transparent"

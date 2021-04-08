@@ -1,4 +1,4 @@
-package br.ufpe.cin.vrvs.podcastplayer.ui.view.component.image
+package br.ufpe.cin.vrvs.podcastplayer.view.component.image
 
 import android.content.Context
 import android.util.AttributeSet

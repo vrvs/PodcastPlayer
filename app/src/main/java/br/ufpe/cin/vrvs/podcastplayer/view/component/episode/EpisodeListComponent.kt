@@ -1,4 +1,4 @@
-package br.ufpe.cin.vrvs.podcastplayer.ui.view.component.episode
+package br.ufpe.cin.vrvs.podcastplayer.view.component.episode
 
 import android.content.Context
 import android.util.AttributeSet
@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import br.ufpe.cin.vrvs.podcastplayer.R
 import br.ufpe.cin.vrvs.podcastplayer.data.model.Episode
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.episode.adapter.EpisodeAdapter
-import br.ufpe.cin.vrvs.podcastplayer.ui.view.component.image.ImageButtonComponent
+import br.ufpe.cin.vrvs.podcastplayer.view.component.episode.adapter.EpisodeAdapter
+import br.ufpe.cin.vrvs.podcastplayer.view.component.image.ImageButtonComponent
 
 class EpisodeListComponent @JvmOverloads constructor(
     context: Context,
