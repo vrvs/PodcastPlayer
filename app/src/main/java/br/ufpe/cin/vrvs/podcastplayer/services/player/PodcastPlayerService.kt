@@ -88,6 +88,8 @@ class PodcastPlayerService : LifecycleService() {
         mPlayer.setOnCompletionListener {
             stop(true)
         }
+        registerReceiver(playReceiver, IntentFilter(PLAY_ACTION))
+        registerReceiver(pauseReceiver, IntentFilter(PAUSE_ACTION))
     }
 
     override fun onStartCommand(
@@ -111,8 +113,6 @@ class PodcastPlayerService : LifecycleService() {
                 else -> {}
             }
         }
-        registerReceiver(playReceiver, IntentFilter(PLAY_ACTION))
-        registerReceiver(pauseReceiver, IntentFilter(PAUSE_ACTION))
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -266,6 +266,8 @@ class PodcastPlayerService : LifecycleService() {
     }
 
     override fun onDestroy() {
+        unregisterReceiver(playReceiver)
+        unregisterReceiver(pauseReceiver)
         notificationManager.cancel(NOTIFICATION_ID)
         episode?.id?.let {
             podcastRepository.updatePlayedPodcast(it, mPlayer.currentPosition.toLong())
